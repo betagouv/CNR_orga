@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   web:
+    container_name: cnr_orga_web
     build: .
     env_file:
       - .env
@@ -13,6 +14,7 @@ services:
       - db
     restart: on-failure
   db:
+    container_name: cnr_orga_db
     image: postgres:14
     environment:
       POSTGRES_USER: postgres
