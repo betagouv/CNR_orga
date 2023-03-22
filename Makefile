@@ -29,3 +29,4 @@ quality:
 fix:
 	$(EXEC_CMD) black --exclude=venv .
 	$(EXEC_CMD) isort --skip-glob="**/migrations" --extend-skip-glob="venv" .
+	$(EXEC_CMD) djhtml $(shell find templates -name "*.html")
