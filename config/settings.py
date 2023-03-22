@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.forms",
     "widget_tweaks",
     "dsfr",
     "sass_processor",
@@ -65,9 +66,28 @@ MIDDLEWARE = [
 
 # Add debug toolbar
 if DEBUG:
+    INSTALLED_APPS.append("django_extensions")
     INSTALLED_APPS.append("debug_toolbar")
     MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
-    INTERNAL_IPS = ["127.0.0.1"] + ALLOWED_HOSTS
+    DEBUG_TOOLBAR_CONFIG = {
+        # https://django-debug-toolbar.readthedocs.io/en/latest/panels.html#panels
+        "DISABLE_PANELS": [
+            "debug_toolbar.panels.redirects.RedirectsPanel",
+            # ProfilingPanel makes the django admin extremely slow...
+            "debug_toolbar.panels.profiling.ProfilingPanel",
+        ],
+        "SHOW_TEMPLATE_CONTEXT": True,
+    }
+
+    # For Docker env
+    import socket
+
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = (
+        [ip[: ip.rfind(".")] + ".1" for ip in ips]
+        + ["127.0.0.1", "10.0.2.2"]
+        + ALLOWED_HOSTS
+    )
 
 ROOT_URLCONF = "config.urls"
 

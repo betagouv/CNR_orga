@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load dsfr_tags widget_tweaks %}
+
+{% block content %}
+  <div class="fr-container fr-container--fluid fr-mb-md-14v">
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+      <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+        <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
+          <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+            <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
+              <h1>Connexion</h1>
+              <div>
+                <form id="login-1760" method="post" action="{% url 'login' %}">
+                  <fieldset class="fr-fieldset">
+                    <legend class="fr-fieldset__legend" id="login-1760-fieldset-legend">
+                      <h2>Se connecter avec son compte</h2>
+                    </legend>
+                    <div class="fr-fieldset__element">
+                      <fieldset class="fr-fieldset" id="credentials" aria-labelledby="credentials-messages">
+                        <div class="fr-fieldset__element">
+                          <span class="fr-hint-text">Sauf mention contraire, tous les champs sont obligatoires.</span>
+                        </div>
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ next }}">
+
+                        {% if form.errors %}
+                          <div class="fr-alert fr-alert--error fr-mb-md-4v">
+                            <p>Votre nom d'utilisateur et votre mot de passe ne correspondent pas. Veuillez réessayer.</p>
+                          </div>
+                        {% endif %}
+
+                        {% if next %}
+                          <div class="fr-alert fr-alert--warning fr-mb-md-4v">
+                            {% if user.is_authenticated %}
+                              <p>Votre compte n'a pas accès à cette page. Pour continuer, veuillez vous connecter avec un compte qui y a accès.</p>
+                            {% else %}
+                              <p>Veuillez vous connecter pour voir cette page.</p>
+                            {% endif %}
+                          </div>
+                        {% endif %}
+
+                        <div class="fr-fieldset__element">
+                          <div class="fr-input-group">
+                            <label class="fr-label" for="username-1757">
+                              Identifiant
+                              <span class="fr-hint-text">Format attendu : nom@domaine.fr</span>
+                            </label>
+                            {{ form.username|add_class:"fr-input" }}
+                          </div>
+                        </div>
+                        <div class="fr-fieldset__element">
+                          <div class="fr-password" id="password-1758">
+                            <label class="fr-label" for="password-1758-input">Mot de passe</label>
+                            <div class="fr-input-wrap">
+                              {{ form.password|add_class:"fr-password__input fr-input" }}
+                            </div>
+                            <div class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
+                              <input aria-label="Afficher le mot de passe" id="password-1758-show" type="checkbox">
+                              <label class="fr-password__checkbox fr-label" for="password-1758-show">Afficher</label>
+                            </div>
+                            <p>
+                              <a href="{% url 'password_reset' %}" class="fr-link">Mot de passe oublié ?</a>
+                            </p>
+                          </div>
+                        </div>
+                      </fieldset>
+                    </div>
+                    <div class="fr-fieldset__element">
+                      <ul class="fr-btns-group">
+                        <li>
+                          <button class="fr-mt-2v fr-btn" type="submit">
+                            Se connecter
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </fieldset>
+                </form>
+              </div>
+              <hr>
+              <h2>Vous n’avez pas de compte ?</h2>
+              <ul class="fr-btns-group">
+                <li>
+                  <button class="fr-btn fr-btn--secondary">Créer un compte</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
