@@ -139,3 +139,6 @@ dmypy.json
 
 # VSCode
 .vscode
+
+# Bash
+.bash_history
