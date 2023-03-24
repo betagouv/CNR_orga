@@ -16,7 +16,7 @@
                       <h2>Se connecter avec son compte</h2>
                     </legend>
                     <div class="fr-fieldset__element">
-                      <fieldset class="fr-fieldset" id="credentials" aria-labelledby="credentials-messages">
+                      <fieldset class="fr-fieldset" id="credentials">
                         <div class="fr-fieldset__element">
                           <span class="fr-hint-text">Sauf mention contraire, tous les champs sont obligatoires.</span>
                         </div>
@@ -42,7 +42,7 @@
                         <div class="fr-fieldset__element">
                           <div class="fr-input-group">
                             <label class="fr-label" for="username-1757">
-                              Identifiant
+                              Email
                               <span class="fr-hint-text">Format attendu : nom@domaine.fr</span>
                             </label>
                             {{ form.username|add_class:"fr-input" }}
@@ -81,7 +81,7 @@
               <h2>Vous n’avez pas de compte ?</h2>
               <ul class="fr-btns-group">
                 <li>
-                  <button class="fr-btn fr-btn--secondary">Créer un compte</button>
+                  <a class="fr-btn fr-btn--secondary" href="{% url 'signup' %}">Créer un compte</a>
                 </li>
               </ul>
             </div>
