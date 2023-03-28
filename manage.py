@@ -13,6 +13,7 @@ def main():
         os.environ.get("RUN_MAIN") or os.environ.get("WERKZEUG_RUN_MAIN")
     ):
         import debugpy
+
         debugpy.listen(("0.0.0.0", 5678))
         debugpy.wait_for_client()
 

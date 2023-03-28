@@ -3,7 +3,8 @@ import uuid
 from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-from django.contrib.auth.models import User
+
+from signup.models import OrganizerEmail
 
 
 class SignupUserForm(UserCreationForm):
@@ -26,6 +27,8 @@ class SignupUserForm(UserCreationForm):
     def save(self, commit=True):
         user = super(SignupUserForm, self).save(commit=False)
         user.username = uuid.uuid4().hex
+        user.is_organizer = OrganizerEmail.objects.filter(email=user.email).exists()
+
         if commit:
             user.save()
         return user
