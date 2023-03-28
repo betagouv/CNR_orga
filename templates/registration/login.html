@@ -25,7 +25,13 @@
 
                         {% if form.errors %}
                           <div class="fr-alert fr-alert--error fr-mb-md-4v">
-                            <p>Votre nom d'utilisateur et votre mot de passe ne correspondent pas. Veuillez réessayer.</p>
+                            <p>
+                              {% for field, errors in form.errors.items %}
+                                {% for error in errors %}
+                                  {{ error }}{% if not forloop.last %}<br>{% endif %}
+                                {% endfor %}
+                              {% endfor %}
+                            </p>
                           </div>
                         {% endif %}
 

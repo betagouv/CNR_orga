@@ -5,6 +5,25 @@ from signup.factories import DEFAULT_PASSWORD, EmailBasedUserFactory, OrganizerE
 from signup.models import EmailBasedUser
 
 
+class LoginTest(TestCase):
+    def setUp(self):
+        self.url = reverse("login")
+        self.user = EmailBasedUserFactory()
+
+    def test_login_form_with_correct_password(self):
+        response = self.client.post(
+            self.url, {"username": self.user.email, "password": DEFAULT_PASSWORD}
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("profile"))
+
+    def test_login_form_with_wrong_password(self):
+        response = self.client.post(
+            self.url, {"username": self.user.email, "password": "wrongpassword"}
+        )
+        self.assertContains(response, "Saisissez une adresse email et un mot de passe valides.")
+
+
 class SignupTest(TestCase):
     def setUp(self):
         self.url = reverse("signup")
@@ -20,6 +39,21 @@ class SignupTest(TestCase):
 
         response_login = self.client.get(response.url)
         self.assertEqual(response_login.status_code, 200)
+
+    def test_signup_with_already_exist_email(self):
+        existing_user = EmailBasedUser.objects.first()
+        new_user = EmailBasedUserFactory.stub(email=existing_user.email)
+        form_data = {
+            "first_name": new_user.first_name,
+            "last_name": new_user.last_name,
+            "email": new_user.email,
+            "password1": DEFAULT_PASSWORD,
+            "password2": DEFAULT_PASSWORD,
+        }
+
+        response = self.client.post(self.url, data=form_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Cette adresse email est déjà utilisée")
 
     def test_signup_with_unknown_email(self):
         self.assertEqual(EmailBasedUser.objects.count(), 3)
