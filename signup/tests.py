@@ -11,16 +11,12 @@ class LoginTest(TestCase):
         self.user = EmailBasedUserFactory()
 
     def test_login_form_with_correct_password(self):
-        response = self.client.post(
-            self.url, {"username": self.user.email, "password": DEFAULT_PASSWORD}
-        )
+        response = self.client.post(self.url, {"username": self.user.email, "password": DEFAULT_PASSWORD})
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse("profile"))
 
     def test_login_form_with_wrong_password(self):
-        response = self.client.post(
-            self.url, {"username": self.user.email, "password": "wrongpassword"}
-        )
+        response = self.client.post(self.url, {"username": self.user.email, "password": "wrongpassword"})
         self.assertContains(response, "Saisissez une adresse email et un mot de passe valides.")
 
 
@@ -76,9 +72,7 @@ class SignupTest(TestCase):
         first_user = EmailBasedUser.objects.first()
         self.assertEqual(first_user.is_organizer, False)
 
-        response = self.client.post(
-            reverse("login"), {"username": new_user.email, "password": DEFAULT_PASSWORD}
-        )
+        response = self.client.post(reverse("login"), {"username": new_user.email, "password": DEFAULT_PASSWORD})
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse("profile"))
 
@@ -104,8 +98,6 @@ class SignupTest(TestCase):
         saved_user = EmailBasedUser.objects.filter(email=new_user.email).first()
         self.assertEqual(saved_user.is_organizer, True)
 
-        response = self.client.post(
-            reverse("login"), {"username": new_user.email, "password": DEFAULT_PASSWORD}
-        )
+        response = self.client.post(reverse("login"), {"username": new_user.email, "password": DEFAULT_PASSWORD})
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse("profile"))

@@ -1,6 +1,6 @@
-from dotenv import dotenv_values
-
-from config.settings import *  # noqa: F401,F403
+from dotenv import load_dotenv
 
 
-MOCK_EXTERNAL_API = dotenv_values(".env.test")["MOCK_EXTERNAL_API"]
+load_dotenv(".env.test")
+
+from config.settings import *  # noqa: F401, E402, F403
