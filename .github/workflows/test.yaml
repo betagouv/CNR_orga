@@ -33,7 +33,7 @@ jobs:
           DJANGO_DEBUG: True
           USE_VENV: 1
       - name: 🚧 Check pending migrations
-        run: django-admin makemigrations --check --dry-run --noinput
+        run: python manage.py makemigrations --check --dry-run --noinput
       - name: 🤹‍ Django tests
         run: make test-unit
         env:
