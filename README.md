@@ -4,17 +4,20 @@ L'application web qui soutient les organisateurs de CNR (Conseil National de la 
 
 ## Lancement en local avec Docker
 
-Le projet peut se lancer en local avec Docker.
+### Prérequis
+
+- Docker 19.03.0+
+- `docker-compose` ([installation standalone](https://docs.docker.com/compose/install/other/))
 
 ### Copier les variables d'environnement
 
-Le fichier `.env.example` contient des variables fonctionnelle pour un **environnement de test** Docker.
+Le fichier `.env.example` contient des variables fonctionnelles pour un **environnement de test** Docker.
 
 ```sh
 cp .env.example .env
 ```
 
-### Lancer les containers
+### Lancer les containeurs
 
 ```sh
 docker-compose up -d
