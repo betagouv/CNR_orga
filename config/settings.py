@@ -41,18 +41,27 @@ INTERNAL_IPS = [
 ]
 
 # Application definition
-INSTALLED_APPS = [
+DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+]
+
+THIRD_PARTY_APPS = [
     "django.forms",
-    "widget_tweaks",
     "dsfr",
     "sass_processor",
+    "widget_tweaks",
 ]
+
+LOCAL_APPS = [
+    "signup",
+]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -180,3 +189,6 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+AUTH_USER_MODEL = "signup.EmailBasedUser"
+AUTHENTICATION_BACKENDS = ["signup.backends.EmailBackend"]
