@@ -26,6 +26,12 @@ services:
     ports:
       - "5432:5432"
     restart: on-failure
-
+  smtp:
+    container_name: cnr_orga_smtp
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
+    restart: on-failure
 volumes:
   postgres_data:
