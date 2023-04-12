@@ -1,0 +1,11 @@
+{% load widget_tweaks %}
+
+<div class="fr-checkbox-group{% if field.errors %} fr-checkbox-group--error{% endif %}{% if field.field.disabled %} fr-input-group--disabled{% endif %}">
+  {% render_field field class="fr-input" %}
+  <label class="fr-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+  {% if field.errors %}
+    <div id="{{ field.auto_id }}-desc-error" class="fr-error-text">
+      {{ field.errors }}
+    </div>
+  {% endif %}
+</div>

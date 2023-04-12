@@ -1,0 +1,13 @@
+{% load widget_tweaks %}
+
+{% if field|widget_type == "checkboxinput" %}
+  {% include "dsfr/form_field_snippets/checkbox_snippet.html" %}
+{% elif field|widget_type == "checkboxselectmultiple" %}
+  {% include "dsfr/form_field_snippets/checkboxselectmultiple_snippet.html" %}
+{% elif field|widget_type == "radioselect" %}
+  {% include "dsfr/form_field_snippets/radioselect_snippet.html" %}
+{% elif field|widget_type == "select" %}
+  {% include "dsfr/form_field_snippets/select_snippet.html" %}
+{% else %}
+  {% include "dsfr/form_field_snippets/input_snippet.html" %}
+{% endif %}
