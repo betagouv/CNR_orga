@@ -1,7 +1,9 @@
+boto3==1.26.111
 Django==4.1.7
 django-compressor==4.3.1
 django-dsfr==0.13.1
 django-sass-processor==1.2.2
+django-storages==1.13.2
 dj-database-url==1.2.0
 dj-static==0.0.6
 Pillow==9.5.0

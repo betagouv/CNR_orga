@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load dsfr_tags %}
+{% load dsfr_tags static %}
 {% block content %}
   <div class="fr-container fr-container--fluid fr-mb-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
@@ -46,7 +46,11 @@
                 </div>
                 <div class="fr-card__header">
                   <div class="fr-card__img">
-                    <img class="fr-responsive-img" src="/{{ event.image }}" alt="" />
+                    {% if event.image %}
+                      <img class="fr-responsive-img" src="{{ event.image.url }}" alt="" />
+                    {% else %}
+                      <img class="fr-responsive-img" src="{% static "images/placeholder.16x9.png" %}" alt="" />
+                    {% endif %}
                   </div>
                 </div>
               </div>
