@@ -100,4 +100,9 @@ class SignupTest(TestCase):
 
         response = self.client.post(reverse("login"), {"username": new_user.email, "password": DEFAULT_PASSWORD})
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse("profile"))
+        self.assertRedirects(
+            response, reverse("profile"), status_code=302, target_status_code=302, fetch_redirect_response=True
+        )
+
+        response = self.client.get(reverse("profile"))
+        self.assertRedirects(response, reverse("event_organizer_dashboard"))

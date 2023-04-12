@@ -31,3 +31,4 @@ class EmailBasedUserFactory(factory.django.DjangoModelFactory):
     last_name = factory.Faker("last_name")
     email = factory.Faker("email")
     password = factory.LazyFunction(default_password)
+    is_organizer = False
