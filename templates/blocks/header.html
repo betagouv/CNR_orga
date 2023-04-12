@@ -34,7 +34,7 @@
 {# endblock burger_menu #}
 
 {% block main_menu %}
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and user.is_organizer %}
         {% include "event/organizer/partials/header_organizer.html" %}
     {% endif %}
 {% endblock main_menu %}

@@ -17,7 +17,7 @@
             <h2>Vos concertations</h2>
           </div>
           <div class="fr-col-md-6 fr-col">
-            <a href="{% url 'event_organizer_event_add' %}" class="fr-btn" target="_self">Créer une nouvelle concertation</a>
+            <a href="{% url 'event_organizer_event_create' %}" class="fr-btn" target="_self">Créer une nouvelle concertation</a>
           </div>
           {% for event in event_list %}
             <div class="fr-col-md-6 fr-col">
@@ -25,7 +25,7 @@
                 <div class="fr-card__body">
                   <div class="fr-card__content">
                     <h3 class="fr-card__title">
-                      <a href="{% url 'event_organizer_event_edit' event.pk %}">{{ event.subject }}</a>
+                      <a href="{% url 'event_organizer_event_update' event.pk %}">{{ event.subject }}</a>
                     </h3>
                     <p class="fr-card__desc">{{ event.description }}</p>
                     <div class="fr-card__start">

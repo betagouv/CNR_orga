@@ -7,7 +7,7 @@
                 <form method="post" enctype="multipart/form-data">{% csrf_token %}
                     <fieldset class="fr-fieldset">
                         <legend class="fr-fieldset__legend">
-                            <h2>{% if object %}Modifier la{% else %}Créez une{% endif %} page internet pour votre concertation CNR</h2>
+                            <h2>{% if object %}Modifier la{% else %}Créez une{% endif %} page Internet pour votre concertation CNR</h2>
                         </legend>
                         {% if form.non_field_errors %}
                             {% for error in form.non_field_errors %}

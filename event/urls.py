@@ -5,6 +5,6 @@ from event.views import OrganizerDashboardView, OrganizerEventCreateView, Organi
 
 urlpatterns = [
     path("organizer/dashboard", OrganizerDashboardView.as_view(), name="event_organizer_dashboard"),
-    path("organizer/event/add", OrganizerEventCreateView.as_view(), name="event_organizer_event_add"),
-    path("organizer/event/edit/<int:pk>", OrganizerEventUpdateView.as_view(), name="event_organizer_event_edit"),
+    path("organizer/event/create", OrganizerEventCreateView.as_view(), name="event_organizer_event_create"),
+    path("organizer/event/update/<int:pk>", OrganizerEventUpdateView.as_view(), name="event_organizer_event_update"),
 ]
