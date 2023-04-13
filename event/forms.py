@@ -81,3 +81,26 @@ class EventForm(ModelForm):
             "scale": "À quelle échelle se situe votre concertation ?",
             "practical_information": "Infos pratiques pour s'y rendre si nécessaire",
         }
+
+
+class EventListFilterForm(forms.Form):
+    theme = forms.ChoiceField(
+        label="Thématique",
+        choices=[("", "Selectionner une thématique")] + Event.Theme.choices,
+        widget=forms.Select(
+            attrs={
+                "class": "fr-select",
+                "onchange": "this.form.submit()",
+            }
+        ),
+    )
+    scale = forms.ChoiceField(
+        label="Échelle",
+        choices=[("", "Selectionner une échelle")] + Event.Scale.choices,
+        widget=forms.Select(
+            attrs={
+                "class": "fr-select",
+                "onchange": "this.form.submit()",
+            }
+        ),
+    )

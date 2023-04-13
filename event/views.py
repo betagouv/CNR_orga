@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views.generic import DetailView, FormView, UpdateView
 from django.views.generic.list import ListView
 
-from event.forms import EventForm
+from event.forms import EventForm, EventListFilterForm
 from event.models import Event
 
 
@@ -59,8 +59,30 @@ class OrganizerEventUpdateView(OrganizerMixin, UpdateView):
 class EventListView(ListView):
     model = Event
 
+    def get_theme(self):
+        filter_theme = self.request.GET.get("theme", None)
+        return filter_theme if filter_theme in Event.Theme.values else None
+
+    def get_scale(self):
+        filter_scale = self.request.GET.get("scale", None)
+        return filter_scale if filter_scale in Event.Scale.values else None
+
     def get_queryset(self):
-        return Event.current_and_upcomings.filter(pub_status=Event.PubStatus.PUB)
+        qs = Event.current_and_upcomings.filter(pub_status=Event.PubStatus.PUB)
+
+        filter_theme = self.get_theme()
+        if filter_theme:
+            qs = qs.filter(theme=filter_theme)
+
+        filter_scale = self.get_scale()
+        if filter_scale:
+            qs = qs.filter(scale=filter_scale)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["form"] = EventListFilterForm(initial={"theme": self.get_theme(), "scale": self.get_scale()})
+        return context
 
 
 class EventDetailView(DetailView):

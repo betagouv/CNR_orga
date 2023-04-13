@@ -6,47 +6,65 @@
       <div id="contenu" class="fr-col-12 fr-col-md-10 fr-py-12v">
         <h1>Les concertations à venir</h1>
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
-          {% for event in event_list %}
-            <div class="fr-col-md-6 fr-col">
-              <div class="fr-card fr-enlarge-link">
-                <div class="fr-card__body">
-                  <div class="fr-card__content">
-                    <h3 class="fr-card__title">
-                      <a href="{% url 'event_detail' event.pk %}">{{ event.subject }}</a>
-                    </h3>
-                    <p class="fr-card__desc">{{ event.description }}</p>
-                    <div class="fr-card__start">
-                      <ul class="fr-badges-group">
-                        <li>
-                          <p class="fr-badge fr-badge--green-menthe">{{ event.theme }}</p>
-                        </li>
-                        {% if event.sub_theme %}
-                          <li>
-                            <p class="fr-badge fr-badge--blue-ecume">{{ event.sub_theme }}</p>
-                          </li>
+          <div class="fr-col-3">
+            <form method="GET">
+                <div class="fr-select-group">
+                    {{ form.theme.errors }}
+                    <label class="fr-label" for="{{ form.theme.id_for_label }}">{{ form.theme.label }}</label>
+                    {{ form.theme }}
+                </div>
+                <div class="fr-select-group">
+                    {{ form.scale.errors }}
+                    <label class="fr-label" for="{{ form.scale.id_for_label }}">{{ form.scale.label }}</label>
+                    {{ form.scale }}
+                </div>
+            </form>
+          </div>
+          <div class="fr-col-9">
+            <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
+              {% for event in event_list %}
+                <div class="fr-col-md-6 fr-col">
+                  <div class="fr-card fr-enlarge-link">
+                    <div class="fr-card__body">
+                      <div class="fr-card__content">
+                        <h3 class="fr-card__title">
+                          <a href="{% url 'event_detail' event.pk %}">{{ event.subject }}</a>
+                        </h3>
+                        <p class="fr-card__desc">{{ event.description }}</p>
+                        <div class="fr-card__start">
+                          <ul class="fr-badges-group">
+                            <li>
+                              <p class="fr-badge fr-badge--green-menthe">{{ event.theme }}</p>
+                            </li>
+                            {% if event.sub_theme %}
+                              <li>
+                                <p class="fr-badge fr-badge--blue-ecume">{{ event.sub_theme }}</p>
+                              </li>
+                            {% endif %}
+                          </ul>
+                          <p class="fr-card__detail fr-icon-map-pin-2-line">{{ event.city }}</p>
+                          <p class="fr-card__detail fr-icon-calendar-line">{{ event.start|date:"d/m/Y" }} {{ event.start|time:"H\hi" }}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="fr-card__header">
+                      <div class="fr-card__img">
+                        {% if event.image %}
+                          <img class="fr-responsive-img" src="{{ event.image.url }}" alt="" />
+                        {% else %}
+                          <img class="fr-responsive-img" src="{% static "images/placeholder.16x9.png" %}" alt="" />
                         {% endif %}
-                      </ul>
-                      <p class="fr-card__detail fr-icon-map-pin-2-line">{{ event.city }}</p>
-                      <p class="fr-card__detail fr-icon-calendar-line">{{ event.start|date:"d/m/Y" }} {{ event.start|time:"H\hi" }}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div class="fr-card__header">
-                  <div class="fr-card__img">
-                    {% if event.image %}
-                      <img class="fr-responsive-img" src="{{ event.image.url }}" alt="" />
-                    {% else %}
-                      <img class="fr-responsive-img" src="{% static "images/placeholder.16x9.png" %}" alt="" />
-                    {% endif %}
-                  </div>
+              {% empty %}
+                <div class="fr-col-md-12 fr-col">
+                  <p>Retrouvez bientôt de nouvelles concertations...</p>
                 </div>
-              </div>
+              {% endfor %}
             </div>
-          {% empty %}
-            <div class="fr-col-md-12 fr-col">
-              <p>Retrouvez bientôt de nouvelles concertations...</p>
-            </div>
-          {% endfor %}
+          </div>
         </div>
       </div>
     </div>
