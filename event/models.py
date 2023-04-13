@@ -30,7 +30,7 @@ class Event(models.Model):
     pub_status = models.CharField(
         max_length=5,
         choices=PubStatus.choices,
-        default="UNPUB",
+        default=PubStatus.UNPUB,
         verbose_name="Status de publication",
     )
 
@@ -59,7 +59,7 @@ class Event(models.Model):
     scale = models.CharField(
         max_length=3,
         choices=Scale.choices,
-        default="LOC",
+        default=Scale.LOC,
         verbose_name="Échelle",
     )
 
