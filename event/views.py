@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
-from django.views.generic import FormView, UpdateView
+from django.views.generic import DetailView, FormView, UpdateView
 from django.views.generic.list import ListView
 
 from event.forms import EventForm
@@ -54,3 +54,14 @@ class OrganizerEventUpdateView(OrganizerMixin, UpdateView):
 
     def get_success_url(self):
         return reverse("event_organizer_dashboard")
+
+
+class EventListView(ListView):
+    model = Event
+
+    def get_queryset(self):
+        return Event.current_and_upcomings.filter(pub_status=Event.PubStatus.PUB)
+
+
+class EventDetailView(DetailView):
+    model = Event
