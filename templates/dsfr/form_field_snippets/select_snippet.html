@@ -1,0 +1,13 @@
+{% load widget_tweaks %}
+{# Generic input snippet used by most of the field types #}
+<div class="{{ field.field.widget.group_class|default:'fr-input-group' }}{% if field.errors %} {{ field.field.widget.group_class|default:'fr-input-group' }}--error{% endif %}{% if field.field.disabled %} fr-input-group--disabled{% endif %}">
+  <label class="fr-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+  {% if field.help_text %}<span class="fr-hint-text">{{ field.help_text }}</span>{% endif %}
+
+  {% render_field field class="fr-select" %}
+  {% if field.errors %}
+    <div id="{{ field.auto_id }}-desc-error" class="fr-error-text">
+      {{ field.errors }}
+    </div>
+  {% endif %}
+</div>

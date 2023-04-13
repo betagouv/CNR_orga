@@ -1,0 +1,19 @@
+{% load widget_tweaks %}
+<div class="fr-form-group{% if field.errors %} fr-form-group--error{% endif %}{% if field.field.disabled %} fr-form-group--disabled{% endif %}">
+  <fieldset class="fr-fieldset">
+    <legend class="fr-fieldset__legend fr-text--regular" id="radio-legend-{{ field.auto_id }}">
+      <label class="fr-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+      {% if field.help_text %}<span class="fr-hint-text">{{ field.help_text }}</span>{% endif %}
+    </legend>
+
+    <div class="fr-fieldset__content">
+      {{ field|add_class:"fr-radio-group" }}
+    </div>
+
+    {% if field.errors %}
+      <div id="{{ field.auto_id }}-desc-error" class="fr-error-text">
+        {{ field.errors }}
+      </div>
+    {% endif %}
+  </fieldset>
+</div>
