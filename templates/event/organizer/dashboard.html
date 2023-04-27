@@ -31,6 +31,15 @@
                     <div class="fr-card__start">
                       <ul class="fr-badges-group">
                         <li>
+                          {% if event.pub_status == event.PubStatus.PUB %}
+                            <p class="fr-badge fr-badge--success">Publique</p>
+                          {% elif event.pub_status == event.PubStatus.PRIV %}
+                            <p class="fr-badge fr-badge--warning">Privée</p>
+                          {% else %}
+                            <p class="fr-badge fr-badge--danger">Hors ligne</p>
+                          {% endif %}
+                        </li>
+                        <li>
                           <p class="fr-badge fr-badge--green-menthe">{{ event.theme }}</p>
                         </li>
                         {% if event.sub_theme %}

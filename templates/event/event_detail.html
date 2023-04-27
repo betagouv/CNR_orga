@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load dsfr_tags static %}
+{% block content %}
+  <div class="fr-container fr-container--fluid fr-mb-md-14v">
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+      <div id="contenu" class="fr-col-12 fr-py-12v">
+        <div class="fr-grid-row fr-grid-row-gutters fr-mb-5w">
+          <div class="fr-col-12">
+            <h1>{{ event.subject }}</h1>
+            <ul class="fr-badges-group">
+              <li>
+                <p class="fr-badge fr-badge--green-menthe">{{ event.theme }}</p>
+              </li>
+              {% if event.sub_theme %}
+                <li>
+                  <p class="fr-badge fr-badge--blue-ecume">{{ event.sub_theme }}</p>
+                </li>
+              {% endif %}
+              <li>
+                <p class="fr-badge">{{ event.get_scale_display }}</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="fr-grid-row fr-grid-row-gutters fr-mb-5w">
+          <div class="fr-col fr-mr-2w">
+            <h2>Infos pratiques</h2>
+            <p>{{ event.practical_information }}</p>
+          </div>
+          <div class="fr-col fr-mr-2w">
+            <h2>Adresse</h2>
+            <div class="fr-grid-row">
+              <div class="fr-col-1">
+                <span aria-hidden="true" class="fr-icon-map-pin-2-line"></span>
+              </div>
+              <div class="fr-col-11 fr-pl-2v">
+                {{ event.address }}<br>
+                {{ event.zip_code }} {{ event.city }}
+              </div>
+            </div>
+          </div>
+          <div class="fr-col fr-mr-2w">
+            <h2>Date</h2>
+            <div class="fr-grid-row">
+              <div class="fr-col-1">
+                <span aria-hidden="true" class="fr-icon-calendar-line"></span>
+              </div>
+              <div class="fr-col-11 fr-pl-2v">
+                <p>
+                {% if not event.start|date:"d F Y" == event.end|date:"d F Y" %}
+                  <strong>{{ event.start|date:"d F Y" }}</strong> {{ event.start|time:"H\hi" }}<br>
+                  <strong> {{ event.end|date:"d F Y" }}</strong> {{ event.end|time:"H\hi" }}
+                {% else %}
+                  <strong>{{ event.start|date:"d F Y" }}</strong><br>
+                  {{ event.start|time:"H\hi" }} > {{ event.end|time:"H\hi" }}
+                {% endif %}
+                </p>
+              </div>
+            </div>
+          </div>
+          {% if event.booking_online %}
+            <div class="fr-col fr-mr-2w">
+              <a class="fr-btn" href="#">S'inscrire</a>
+            </div>
+          {% endif %}
+        </div>
+        <div class="fr-grid-row fr-grid-row-gutters">
+          {% if event.image %}
+            <div class="fr-col fr-mr-2w">
+              <img class="fr-responsive-img" src="{{ event.image.url }}" alt="" />
+            </div>
+          {% endif %}
+          <div class="fr-col fr-mr-2w">
+            <h2>Description</h2>
+            <p>{{ event.description }}</p>
+          </div>
+          {% if event.planning %}
+          <div class="fr-col fr-mr-2w">
+            <h2>Format</h2>
+            <p>{{ event.planning }}</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

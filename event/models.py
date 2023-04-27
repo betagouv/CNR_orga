@@ -1,5 +1,11 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils import timezone
+
+
+class CurrentUpcomingManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(start__gte=timezone.now())
 
 
 class Event(models.Model):
@@ -94,3 +100,14 @@ class Event(models.Model):
     planning = models.TextField(verbose_name="Planning", null=True, blank=True)
 
     # TODO: downloaded documents
+
+    objects = models.Manager()
+    current_and_upcomings = CurrentUpcomingManager()
+
+    class Meta:
+        verbose_name = "Concertation"
+        verbose_name_plural = "Concertations"
+        ordering = ["start", "end"]
+
+    def __str__(self):
+        return f"{self.theme} - {self.subject} - {self.start}"
