@@ -2,7 +2,7 @@ from django import forms
 from django.forms.fields import SplitDateTimeField
 from django.forms.models import ModelForm
 
-from event.models import Event
+from event.models import Booking, Event
 
 
 class MySplitDateTimeField(SplitDateTimeField):
@@ -104,3 +104,22 @@ class EventListFilterForm(forms.Form):
             }
         ),
     )
+
+
+class EventRegistrationForm(ModelForm):
+    offer_help = forms.NullBooleanField(
+        label="Souhaitez-vous proposer votre aide (facilitation, restitution, autre) ?",
+        widget=forms.RadioSelect(
+            choices=[
+                (True, "Oui"),
+                (False, "Non"),
+            ]
+        ),
+    )
+
+    class Meta:
+        model = Booking
+        fields = [
+            "offer_help",
+            "comment",
+        ]

@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from event.factories import EventFactory
-from event.models import Event
+from event.models import Booking, Event
 from signup.factories import EmailBasedUserFactory
 
 
@@ -123,3 +123,47 @@ class EventUpdateViewTest(TestCase):
 
         # Has the subject been updated?
         self.assertEqual(event_after.subject, other_event.subject)
+
+
+class EventRegistrationViewTest(TestCase):
+    def setUp(self):
+        self.event = EventFactory()
+        self.event_url = reverse("event_detail", kwargs={"pk": self.event.pk})
+        self.register_url = reverse("event_registration", kwargs={"pk": self.event.pk})
+        self.user = EmailBasedUserFactory(is_organizer=False)
+
+    def test_user_can_register_for_the_event(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.event_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Participer")
+        self.assertContains(response, self.register_url)
+        self.assertNotContains(response, "Se désinscrire")
+
+        response = self.client.get(self.register_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Booking.objects.count(), 0)
+
+        data = {"offer_help": False, "comment": ""}
+        response = self.client.post(self.register_url, data, follow=True)
+        print(response.content)
+        self.assertRedirects(response, self.event_url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(Booking.objects.count(), 1)
+        booking = Booking.objects.get(event=self.event, participant=self.user)
+        unregister_link = reverse("event_registration_delete", kwargs={"pk": booking.pk})
+        self.assertContains(response, "Se désinscrire")
+        self.assertContains(response, unregister_link)
+        self.assertNotContains(response, "Participer")
+
+        response = self.client.get(unregister_link)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Booking.objects.count(), 1)
+
+        response = self.client.post(unregister_link, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(Booking.objects.count(), 0)
+        self.assertContains(response, "Participer")
+        self.assertContains(response, self.register_url)
+        self.assertNotContains(response, "Se désinscrire")
