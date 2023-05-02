@@ -7,6 +7,7 @@ from event.views import (
     EventRegistrationView,
     OrganizerDashboardView,
     OrganizerEventCreateView,
+    OrganizerEventDetailView,
     OrganizerEventUpdateView,
 )
 
@@ -14,7 +15,8 @@ from event.views import (
 urlpatterns = [
     path("organizer/dashboard", OrganizerDashboardView.as_view(), name="event_organizer_dashboard"),
     path("organizer/event/create", OrganizerEventCreateView.as_view(), name="event_organizer_event_create"),
-    path("organizer/event/update/<int:pk>", OrganizerEventUpdateView.as_view(), name="event_organizer_event_update"),
+    path("organizer/event/<int:pk>/detail/", OrganizerEventDetailView.as_view(), name="event_organizer_event_detail"),
+    path("organizer/event/<int:pk>/update/", OrganizerEventUpdateView.as_view(), name="event_organizer_event_update"),
     path("list", EventListView.as_view(), name="event_list"),
     path("detail/<int:pk>", EventDetailView.as_view(), name="event_detail"),
     path("registration/<int:pk>", EventRegistrationView.as_view(), name="event_registration"),
