@@ -1,7 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.views.generic import DetailView, FormView, UpdateView
+from django.utils import timezone
+from django.views.generic import DetailView, FormView, UpdateView, View
 from django.views.generic.edit import DeleteView
 from django.views.generic.list import ListView
 
@@ -60,6 +61,34 @@ class OrganizerEventUpdateView(OrganizerMixin, UpdateView):
 
     def get_success_url(self):
         return reverse("event_organizer_event_detail", kwargs={"pk": self.object.pk})
+
+
+class OrganizerRegistrationBaseView(OrganizerMixin, View):
+    def get_booking(self):
+        if not hasattr(self, "booking"):
+            self.booking = get_object_or_404(
+                Booking,
+                pk=self.kwargs["pk"],
+                event__owner=self.request.user,  # only event owner can view/edit booking
+            )
+        return self.booking
+
+
+class OrganizerRegistrationAcceptView(OrganizerRegistrationBaseView):
+    def post(self, request, **kwargs):
+        booking = self.get_booking()
+        booking.confirmed_on = timezone.now()
+        booking.save()
+        return render(request, "event/organizer/partials/booking_row.html", context={"booking": booking})
+
+
+class OrganizerRegistrationDeclineView(OrganizerRegistrationBaseView):
+    def post(self, request, **kwargs):
+        booking = self.get_booking()
+        booking.cancelled_on = timezone.now()
+        booking.cancelled_by = request.user
+        booking.save()
+        return render(request, "event/organizer/partials/booking_row.html", context={"booking": booking})
 
 
 class EventListView(ListView):

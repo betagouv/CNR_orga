@@ -95,27 +95,15 @@
                         <th scope="col">Nom</th>
                         <th scope="col">Email</th>
                         <th scope="col">Statut</th>
+                        <th scope="col"></th>
                       </tr>
                     </thead>
                     <tbody>
                       {% for booking in bookings %}
-                        <tr>
-                          <td>{{ booking.participant.first_name }}</td>
-                          <td>{{ booking.participant.last_name }}</td>
-                          <td>{{ booking.participant.email }}</td>
-                          <td>
-                            {% if booking.confirmed_on %}
-                              <p class="fr-badge fr-badge--success">Confirmée le {{ booking.confirmed_on|date:"d F Y" }}</p>
-                            {% elif booking.cancelled_on %}
-                              <p class="fr-badge fr-badge--error">Déclinée le {{ booking.cancelled_on|date:"d F Y" }}</p>
-                            {% else %}
-                              <p class="fr-badge fr-badge--info fr-badge--no-icon">En attente de confirmation</p>
-                            {% endif %}
-                          </td>
-                        </tr>
+                        {% include "event/organizer/partials/booking_row.html" %}
                       {% empty %}
                         <tr>
-                          <td colspan="4">
+                          <td colspan="5">
                             <p>Il n'y a pas encore de participant pour cette concertation...</p>
                           </td>
                         </tr>
