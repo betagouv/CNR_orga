@@ -52,6 +52,7 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "django.forms",
+    "django_htmx",
     "dsfr",
     "sass_processor",
     "widget_tweaks",
@@ -72,6 +73,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 # Add debug toolbar
@@ -114,6 +116,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "dsfr.context_processors.site_config",
+                "utils.settings_context_processors.expose_settings",
             ],
         },
     },

@@ -19,7 +19,7 @@
             </title>
         {% endblock title %}
     </head>
-    <body>
+    <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
         {% block skiplinks %}
             {% dsfr_skiplinks skiplinks %}
         {% endblock skiplinks %}
@@ -31,6 +31,11 @@
         {% include "blocks/footer.html" %}
 
         {% dsfr_js nonce=request.csp_nonce %}
+        <script src="{% static 'vendor/htmx/htmx-1.9.2.min.js' %}"></script>
+        {% if debug %}
+            <button hx-ext="debug">Debug Me...</button>
+            <script src="{% static 'vendor/htmx/ext/debug.js' %}"></script>
+        {% endif %}
         {% block extra_js %}{% endblock extra_js %}
     </body>
 </html>
