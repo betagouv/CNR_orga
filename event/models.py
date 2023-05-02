@@ -9,6 +9,10 @@ class CurrentUpcomingManager(models.Manager):
 
 
 class Event(models.Model):
+    """
+    An event being organised
+    """
+
     class PubStatus(models.TextChoices):
         PUB = "pub", "Public"
         PRIV = "priv", "Privé"
@@ -111,3 +115,27 @@ class Event(models.Model):
 
     def __str__(self):
         return f"{self.theme} - {self.subject} - {self.start}"
+
+
+class Booking(models.Model):
+    """
+    Entry recording a user registration to an event
+    """
+
+    event = models.ForeignKey("Event", related_name="bookings", on_delete=models.CASCADE)
+    participant = models.ForeignKey(get_user_model(), related_name="bookings", on_delete=models.CASCADE)
+    offer_help = models.BooleanField(verbose_name="Proposer de l'aide", null=True)
+    comment = models.TextField(verbose_name="Commentaire libre", null=True, blank=True)
+    confirmed_on = models.DateTimeField(blank=True, null=True)
+    cancelled_by = models.ForeignKey(
+        get_user_model(),
+        blank=True,
+        null=True,
+        related_name="cancelled_bookings",
+        on_delete=models.SET_NULL,
+    )
+    cancelled_on = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ("event", "participant")
+        ordering = ["id"]

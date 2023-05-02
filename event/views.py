@@ -2,10 +2,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import DetailView, FormView, UpdateView
+from django.views.generic.edit import DeleteView
 from django.views.generic.list import ListView
 
-from event.forms import EventForm, EventListFilterForm
-from event.models import Event
+from event.forms import EventForm, EventListFilterForm, EventRegistrationForm
+from event.models import Booking, Event
 
 
 class OrganizerMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -87,3 +88,43 @@ class EventListView(ListView):
 
 class EventDetailView(DetailView):
     model = Event
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context["booking"] = Booking.objects.filter(event=self.object, participant=self.request.user).first()
+        return context
+
+
+class EventRegistrationView(LoginRequiredMixin, FormView):
+    template_name = "event/event_registration.html"
+    form_class = EventRegistrationForm
+
+    def get_event(self):
+        return get_object_or_404(Event, pk=self.kwargs.get("pk"))
+
+    def form_valid(self, form):
+        form.instance.event = self.get_event()
+        form.instance.participant = self.request.user
+        form.save()
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["event"] = self.get_event()
+        return context
+
+    def get_success_url(self):
+        return reverse("event_detail", kwargs={"pk": self.kwargs.get("pk")})
+
+
+class EventRegistrationDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Booking
+
+    # test if booking is owned by correct user
+    def test_func(self):
+        booking = get_object_or_404(Booking, pk=self.kwargs.get("pk"), participant=self.request.user)
+        return booking is not None
+
+    def get_success_url(self):
+        return reverse("event_detail", kwargs={"pk": self.object.event.pk})

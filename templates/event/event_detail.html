@@ -47,20 +47,36 @@
               </div>
               <div class="fr-col-11 fr-pl-2v">
                 <p>
-                {% if not event.start|date:"d F Y" == event.end|date:"d F Y" %}
-                  <strong>{{ event.start|date:"d F Y" }}</strong> {{ event.start|time:"H\hi" }}<br>
-                  <strong> {{ event.end|date:"d F Y" }}</strong> {{ event.end|time:"H\hi" }}
-                {% else %}
-                  <strong>{{ event.start|date:"d F Y" }}</strong><br>
-                  {{ event.start|time:"H\hi" }} > {{ event.end|time:"H\hi" }}
-                {% endif %}
+                  {% if not event.start|date:"d F Y" == event.end|date:"d F Y" %}
+                    <strong>{{ event.start|date:"d F Y" }}</strong> {{ event.start|time:"H\hi" }}<br>
+                    <strong> {{ event.end|date:"d F Y" }}</strong> {{ event.end|time:"H\hi" }}
+                  {% else %}
+                    <strong>{{ event.start|date:"d F Y" }}</strong><br>
+                    {{ event.start|time:"H\hi" }} > {{ event.end|time:"H\hi" }}
+                  {% endif %}
                 </p>
               </div>
             </div>
           </div>
           {% if event.booking_online %}
             <div class="fr-col fr-mr-2w">
-              <a class="fr-btn" href="#">S'inscrire</a>
+              {% if user.is_authenticated %}
+                {% if booking %}
+                  <h3>Inscription</h3>
+                  {% if booking.confirmed_on %}
+                    <p class="fr-badge fr-badge--success">Confirmée le {{ booking.confirmed_on|date:"d F Y" }}</p>
+                  {% elif booking.cancelled_on %}
+                    <p class="fr-badge fr-badge--error">Déclinée le {{ booking.cancelled_on|date:"d F Y" }}</p>
+                  {% else %}
+                    <p class="fr-badge fr-badge--info">En attente de confirmation</p>
+                    <a class="fr-btn fr-mt-4v" href="{% url "event_registration_delete" booking.pk %}">Se désinscrire</a>
+                  {% endif %}
+                {% else %}
+                  <a class="fr-btn" href="{% url "event_registration" event.pk %}">Participer</a>
+                {% endif %}
+              {% else %}
+                <a class="fr-btn" href="{% url "login" %}?next={% url "event_registration" event.pk %}">Participer</a>
+              {% endif %}
             </div>
           {% endif %}
         </div>
@@ -75,10 +91,10 @@
             <p>{{ event.description }}</p>
           </div>
           {% if event.planning %}
-          <div class="fr-col fr-mr-2w">
-            <h2>Format</h2>
-            <p>{{ event.planning }}</p>
-          </div>
+            <div class="fr-col fr-mr-2w">
+              <h2>Format</h2>
+              <p>{{ event.planning }}</p>
+            </div>
           {% endif %}
         </div>
       </div>
