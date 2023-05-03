@@ -1,6 +1,5 @@
 <tr id="booking-row-{{ booking.pk }}">
-    <td>{{ booking.participant.first_name }}</td>
-    <td>{{ booking.participant.last_name }}</td>
+    <td>{{ booking.participant.first_name }} {{ booking.participant.last_name }}</td>
     <td>{{ booking.participant.email }}</td>
     <td>
         {% if booking.confirmed_on %}
