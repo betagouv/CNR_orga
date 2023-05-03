@@ -23,10 +23,6 @@ class OrganizerDashboardView(OrganizerMixin, ListView):
         qs = Event.objects.filter(owner=self.request.user).order_by("start")
         return qs
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data()
-        return context
-
 
 class OrganizerEventCreateView(OrganizerMixin, FormView):
     template_name = "event/organizer/event_edit.html"
@@ -37,12 +33,22 @@ class OrganizerEventCreateView(OrganizerMixin, FormView):
         form.save()
         return super(OrganizerEventCreateView, self).form_valid(form)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
     def get_success_url(self):
         return reverse("event_organizer_dashboard")
+
+
+class OrganizerEventDetailView(OrganizerMixin, DetailView):
+    template_name = "event/organizer/event_detail.html"
+    model = Event
+
+    def get_object(self, *args, **kwargs):
+        event = get_object_or_404(Event, pk=self.kwargs["pk"], owner=self.request.user)
+        return event
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["bookings"] = Booking.objects.filter(event=self.object)
+        return context
 
 
 class OrganizerEventUpdateView(OrganizerMixin, UpdateView):
@@ -50,11 +56,10 @@ class OrganizerEventUpdateView(OrganizerMixin, UpdateView):
     form_class = EventForm
 
     def get_object(self, *args, **kwargs):
-        event = get_object_or_404(Event, pk=self.kwargs["pk"], owner=self.request.user)
-        return event
+        return get_object_or_404(Event, pk=self.kwargs["pk"], owner=self.request.user)
 
     def get_success_url(self):
-        return reverse("event_organizer_dashboard")
+        return reverse("event_organizer_event_detail", kwargs={"pk": self.object.pk})
 
 
 class EventListView(ListView):

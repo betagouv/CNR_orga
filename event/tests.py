@@ -98,7 +98,7 @@ class EventUpdateViewTest(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-        other_event = EventFactory.build()
+        other_event = EventFactory.build()  # for another subject without save object
         self.assertEqual(Event.objects.count(), 1)
         data = {
             "pub_status": self.event.pub_status,
@@ -118,7 +118,8 @@ class EventUpdateViewTest(TestCase):
             "participant_help": self.event.participant_help,
         }
         response = self.client.post(self.url, data=data)
-        self.assertRedirects(response, self.list_url)
+        detail_url = reverse("event_organizer_event_detail", kwargs={"pk": self.event.pk})
+        self.assertRedirects(response, detail_url)
         event_after = Event.objects.first()
 
         # Has the subject been updated?
@@ -146,7 +147,6 @@ class EventRegistrationViewTest(TestCase):
 
         data = {"offer_help": False, "comment": ""}
         response = self.client.post(self.register_url, data, follow=True)
-        print(response.content)
         self.assertRedirects(response, self.event_url)
         self.assertEqual(response.status_code, 200)
 
