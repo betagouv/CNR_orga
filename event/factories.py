@@ -4,7 +4,7 @@ import factory
 import factory.fuzzy
 from dateutil.relativedelta import relativedelta
 
-from event.models import Event
+from event.models import Booking, Event
 from signup.factories import EmailBasedUserFactory
 
 
@@ -29,3 +29,26 @@ class EventFactory(factory.django.DjangoModelFactory):
     city = factory.Faker("city", locale="fr_FR")
     booking_online = True
     participant_help = True
+
+
+class BookingFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Booking
+
+    event = factory.SubFactory(EventFactory)
+    participant = factory.SubFactory(EmailBasedUserFactory)
+    offer_help = factory.Faker("pybool")
+    comment = factory.Faker("text", locale="fr_FR")
+
+    class Params:
+        confirmed = factory.Trait(
+            confirmed_on=factory.fuzzy.FuzzyDateTime(
+                datetime.now(timezone.utc) - relativedelta(years=2), datetime.now(timezone.utc)
+            )
+        )
+        cancelled = factory.Trait(
+            cancelled_by=factory.SubFactory(EmailBasedUserFactory, is_organizer=True),
+            cancelled_on=factory.fuzzy.FuzzyDateTime(
+                datetime.now(timezone.utc) - relativedelta(years=2), datetime.now(timezone.utc)
+            ),
+        )

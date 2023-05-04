@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from event.factories import EventFactory
+from event.factories import BookingFactory, EventFactory
 from event.models import Booking, Event
 from signup.factories import EmailBasedUserFactory
 
@@ -26,6 +26,58 @@ class EventDashboardViewTest(TestCase):
         self.client.force_login(user)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
+
+
+class EventDetailViewTest(TestCase):
+    def setUp(self):
+        self.event = EventFactory()
+        self.url = reverse("event_organizer_event_detail", kwargs={"pk": self.event.pk})
+
+    def test_organizer_participant_list(self):
+        bookings = BookingFactory.create_batch(10, event=self.event)
+        self.client.force_login(self.event.owner)
+        response = self.client.get(self.url)
+        self.assertContains(response, "Participants (10)")
+        self.assertContains(response, bookings[6].participant.first_name)
+        self.assertContains(response, bookings[6].participant.last_name)
+
+    def test_organizer_participant_accept(self):
+        booking = BookingFactory(event=self.event)
+        self.client.force_login(self.event.owner)
+        response = self.client.get(self.url)
+        self.assertContains(response, booking.participant.first_name)
+        self.assertContains(response, booking.participant.last_name)
+        self.assertContains(response, "En attente de confirmation")
+
+        accept_url = reverse("event_organizer_registration_accept", kwargs={"pk": booking.pk})
+        response = self.client.post(accept_url)
+        self.assertContains(response, booking.participant.first_name)
+        self.assertContains(response, booking.participant.last_name)
+        self.assertContains(response, "Confirmée le ")
+
+        response = self.client.get(self.url)
+        self.assertContains(response, booking.participant.first_name)
+        self.assertContains(response, booking.participant.last_name)
+        self.assertContains(response, "Confirmée le ")
+
+    def test_organizer_participant_decline(self):
+        booking = BookingFactory(event=self.event)
+        self.client.force_login(self.event.owner)
+        response = self.client.get(self.url)
+        self.assertContains(response, booking.participant.first_name)
+        self.assertContains(response, booking.participant.last_name)
+        self.assertContains(response, "En attente de confirmation")
+
+        accept_url = reverse("event_organizer_registration_decline", kwargs={"pk": booking.pk})
+        response = self.client.post(accept_url)
+        self.assertContains(response, booking.participant.first_name)
+        self.assertContains(response, booking.participant.last_name)
+        self.assertContains(response, "Déclinée le ")
+
+        response = self.client.get(self.url)
+        self.assertContains(response, booking.participant.first_name)
+        self.assertContains(response, booking.participant.last_name)
+        self.assertContains(response, "Déclinée le ")
 
 
 class EventCreateViewTest(TestCase):
