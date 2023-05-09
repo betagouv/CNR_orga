@@ -4,7 +4,7 @@ import factory
 import factory.fuzzy
 from dateutil.relativedelta import relativedelta
 
-from event.models import Booking, Event
+from event.models import Booking, Contribution, ContributionStatus, Event
 from signup.factories import EmailBasedUserFactory
 
 
@@ -52,3 +52,25 @@ class BookingFactory(factory.django.DjangoModelFactory):
                 datetime.now(timezone.utc) - relativedelta(years=2), datetime.now(timezone.utc)
             ),
         )
+
+
+class ContributionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = Contribution
+
+    event = factory.SubFactory(EventFactory)
+    kind = factory.fuzzy.FuzzyChoice(Contribution.Kind.values)
+    title = factory.Faker("sentence", nb_words=4, locale="fr_FR")
+    description = factory.Faker("text", locale="fr_FR")
+    public = factory.Faker("pybool")
+
+
+class ContributionStatusFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = ContributionStatus
+
+    contribution = factory.SubFactory(ContributionFactory)
+    change_on = factory.fuzzy.FuzzyDateTime(
+        datetime.now(timezone.utc) - relativedelta(years=2), datetime.now(timezone.utc)
+    )
+    status = factory.fuzzy.FuzzyChoice(ContributionStatus.Status.values)
