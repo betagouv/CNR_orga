@@ -1,6 +1,8 @@
 from django.urls import path
 
 from event.views import (
+    ContributionCreateView,
+    ContributionUpdateView,
     EventDetailView,
     EventListView,
     EventRegistrationDeleteView,
@@ -29,6 +31,16 @@ urlpatterns = [
         "organizer/registration/<int:pk>/decline/",
         OrganizerRegistrationDeclineView.as_view(),
         name="event_organizer_registration_decline",
+    ),
+    path(
+        "organizer/event/<int:event_pk>/contribution/create",
+        ContributionCreateView.as_view(),
+        name="event_organizer_contribution_create",
+    ),
+    path(
+        "organizer/contribution/<int:pk>/update",
+        ContributionUpdateView.as_view(),
+        name="event_organizer_contribution_update",
     ),
     # Participant
     path("list", EventListView.as_view(), name="event_list"),

@@ -6,8 +6,8 @@ from django.views.generic import DetailView, FormView, UpdateView, View
 from django.views.generic.edit import DeleteView
 from django.views.generic.list import ListView
 
-from event.forms import EventForm, EventListFilterForm, EventRegistrationForm
-from event.models import Booking, Event
+from event.forms import ContributionForm, EventForm, EventListFilterForm, EventRegistrationForm
+from event.models import Booking, Contribution, Event
 
 
 class OrganizerMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -49,6 +49,7 @@ class OrganizerEventDetailView(OrganizerMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["bookings"] = Booking.objects.filter(event=self.object)
+        context["contributions"] = Contribution.objects.filter(event=self.object)
         return context
 
 
@@ -127,6 +128,8 @@ class EventDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             context["booking"] = Booking.objects.filter(event=self.object, participant=self.request.user).first()
+
+        context["contributions"] = Contribution.objects.filter(event=self.object, public=True)
         return context
 
 
@@ -162,3 +165,41 @@ class EventRegistrationDeleteView(LoginRequiredMixin, UserPassesTestMixin, Delet
 
     def get_success_url(self):
         return reverse("event_detail", kwargs={"pk": self.object.event.pk})
+
+
+class ContributionCreateView(OrganizerMixin, FormView):
+    template_name = "event/organizer/contribution_edit.html"
+    form_class = ContributionForm
+
+    def get_event(self):
+        return get_object_or_404(Event, pk=self.kwargs.get("event_pk"), owner=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["event"] = self.get_event()
+        return context
+
+    def form_valid(self, form):
+        form.instance.event = self.get_event()
+        form.save()
+        return super(ContributionCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse("event_organizer_event_detail", kwargs={"pk": self.kwargs.get("event_pk")})
+
+
+class ContributionUpdateView(OrganizerMixin, UpdateView):
+    template_name = "event/organizer/contribution_edit.html"
+    form_class = ContributionForm
+
+    def get_object(self, *args, **kwargs):
+        return get_object_or_404(Contribution, pk=self.kwargs["pk"], event__owner=self.request.user)
+
+    def get_initial(self):
+        initial = super().get_initial()
+        if self.object.current_status:
+            initial["status"] = self.object.current_status.status
+        return initial
+
+    def get_success_url(self):
+        return reverse("event_organizer_event_detail", kwargs={"pk": self.object.event.pk})

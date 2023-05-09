@@ -22,12 +22,15 @@
           <div class="fr-col-md-12 fr-col">
             <div class="fr-tabs">
               <ul class="fr-tabs__list" role="tablist" aria-label="[A modifier | nom du système d'onglet]">
-                  <li role="presentation">
-                      <button id="tabpanel-404" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-404-panel">Concertation</button>
-                  </li>
-                  <li role="presentation">
-                      <button id="tabpanel-405" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-405-panel">Participants ({{ bookings.count }})</button>
-                  </li>
+                <li role="presentation">
+                  <button id="tabpanel-404" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="0" role="tab" aria-selected="true" aria-controls="tabpanel-404-panel">Concertation</button>
+                </li>
+                <li role="presentation">
+                  <button id="tabpanel-405" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-405-panel">Participants ({{ bookings.count }})</button>
+                </li>
+                <li role="presentation">
+                  <button id="tabpanel-406" class="fr-tabs__tab fr-icon-checkbox-line fr-tabs__tab--icon-left" tabindex="-1" role="tab" aria-selected="false" aria-controls="tabpanel-406-panel">Contributions ({{ contributions.count }})</button>
+                </li>
               </ul>
               <div id="tabpanel-404-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel" aria-labelledby="tabpanel-404" tabindex="0">
                 <div class="fr-grid-row fr-grid-row-gutters fr-mb-5w">
@@ -109,6 +112,42 @@
                       {% endfor %}
                     </tbody>
                   </table>
+                </div>
+              </div>
+              <div id="tabpanel-406-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-406" tabindex="0">
+                <a href="{% url 'event_organizer_contribution_create' event.pk %}" class="fr-btn">Ajouter une contribution</a>
+                <div class="fr-grid-row fr-grid-row--gutters fr-my-1w">
+                  {% for contribution in contributions %}
+                    <div class="fr-col fr-col-md-6">
+                      <div class="fr-card fr-enlarge-link">
+                        <div class="fr-card__body">
+                          <div class="fr-card__content">
+                            <h3 class="fr-card__title">
+                              <a href="{% url "event_organizer_contribution_update" contribution.pk %}">{{ contribution.title }}</a>
+                            </h3>
+                            <p class="fr-card__desc">{{ contribution.description }}</p>
+                            <div class="fr-card__start">
+                              <ul class="fr-badges-group">
+                                <li>
+                                  <p class="fr-badge">{{ contribution.get_kind_display }}</p>
+                                </li>
+                                <li>
+                                  <p class="fr-badge fr-badge--info fr-badge--no-icon">{{ contribution.current_status.get_status_display }}</p>
+                                </li>
+                                <li>
+                                  {% if contribution.public %}
+                                    <p class="fr-badge fr-badge--success fr-badge--no-icon">Publique</p>
+                                  {% else %}
+                                    <p class="fr-badge fr-badge--error fr-badge--no-icon">Privée</p>
+                                  {% endif %}
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
                 </div>
               </div>
             </div>

@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from event.factories import BookingFactory, EventFactory
-from event.models import Booking, Event
+from event.factories import BookingFactory, ContributionFactory, ContributionStatusFactory, EventFactory
+from event.models import Booking, Contribution, ContributionStatus, Event
 from signup.factories import EmailBasedUserFactory
 
 
@@ -219,3 +219,126 @@ class EventRegistrationViewTest(TestCase):
         self.assertContains(response, "Participer")
         self.assertContains(response, self.register_url)
         self.assertNotContains(response, "Se désinscrire")
+
+
+class EventContributionCreateViewTest(TestCase):
+    def setUp(self):
+        self.event = EventFactory()
+        self.url = reverse("event_organizer_contribution_create", kwargs={"event_pk": self.event.pk})
+        self.detail_url = reverse("event_organizer_event_detail", kwargs={"pk": self.event.pk})
+        self.user = self.event.owner
+
+    def test_user_cannot_create_contribution(self):
+        user = EmailBasedUserFactory(is_organizer=False)
+        self.client.force_login(user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_other_organizer_cannot_create_contribution(self):
+        user = EmailBasedUserFactory(is_organizer=True)
+        self.client.force_login(user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_user_can_create_contribution(self):
+        self.client.force_login(self.user)
+
+        # Is there the create link in list view
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, self.url)
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        other_contribution = ContributionFactory.build()  # for generate data without save object
+        other_contribution_status = ContributionStatusFactory.build()
+        self.assertEqual(Contribution.objects.count(), 0)
+        self.assertEqual(ContributionStatus.objects.count(), 0)
+        data = {
+            "kind": other_contribution.kind,
+            "title": other_contribution.title,
+            "description": other_contribution.description,
+            "public": other_contribution.public,
+            "status": other_contribution_status.status,
+        }
+        response = self.client.post(self.url, data=data, follow=True)
+        self.assertRedirects(response, self.detail_url)
+        contrib = Contribution.objects.first()
+        self.assertContains(response, contrib.title)
+
+        self.assertEqual(contrib.title, other_contribution.title)
+        self.assertEqual(contrib.current_status.status, other_contribution_status.status)
+
+
+class EventContributionUpdateViewTest(TestCase):
+    def setUp(self):
+        self.contribution_status = ContributionStatusFactory()
+        self.contribution = self.contribution_status.contribution
+        self.url = reverse("event_organizer_contribution_update", kwargs={"pk": self.contribution.pk})
+        self.detail_url = reverse("event_organizer_event_detail", kwargs={"pk": self.contribution.event.pk})
+        self.user = self.contribution.event.owner
+
+    def test_user_cannot_update_contribution(self):
+        user = EmailBasedUserFactory(is_organizer=False)
+        self.client.force_login(user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_other_organizer_cannot_update_contribution(self):
+        user = EmailBasedUserFactory(is_organizer=True)
+        self.client.force_login(user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_user_can_update_contribution(self):
+        self.client.force_login(self.user)
+
+        # Is there the update link in list view
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, self.url)
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        other_contribution = ContributionFactory.build()  # for other without save object
+        self.assertEqual(Contribution.objects.count(), 1)
+        self.assertEqual(ContributionStatus.objects.count(), 1)
+        data = {
+            "kind": self.contribution.kind,
+            "title": other_contribution.title,
+            "description": other_contribution.description,
+            "public": self.contribution.public,
+            "status": self.contribution.current_status.status,
+        }
+        response = self.client.post(self.url, data=data, follow=True)
+        self.assertRedirects(response, self.detail_url)
+        self.assertContains(response, other_contribution.title)
+
+        contrib = Contribution.objects.first()
+        self.assertEqual(contrib.title, other_contribution.title)
+        self.assertEqual(contrib.description, other_contribution.description)
+        self.assertEqual(ContributionStatus.objects.count(), 1)
+
+        # Now, update status to see history and current status change
+        first_status = self.contribution.current_status.status
+        new_status = (
+            ContributionStatus.Status.STUDY
+            if first_status != ContributionStatus.Status.STUDY
+            else ContributionStatus.Status.SELECT
+        )
+        data = {
+            "kind": self.contribution.kind,
+            "title": self.contribution.title,
+            "description": self.contribution.description,
+            "public": self.contribution.public,
+            "status": new_status,
+        }
+        response = self.client.post(self.url, data=data, follow=True)
+        self.assertRedirects(response, self.detail_url)
+        self.assertEqual(ContributionStatus.objects.count(), 2)
+
+        contrib = Contribution.objects.first()
+        self.assertEqual(contrib.current_status.status, new_status)
+
+        self.assertEqual(ContributionStatus.objects.first().status, first_status)
+        self.assertEqual(ContributionStatus.objects.last().status, new_status)
