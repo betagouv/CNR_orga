@@ -1,8 +1,9 @@
 from django import forms
 from django.forms.fields import SplitDateTimeField
 from django.forms.models import ModelForm
+from django.utils import timezone
 
-from event.models import Booking, Event
+from event.models import Booking, Contribution, ContributionStatus, Event
 
 
 class MySplitDateTimeField(SplitDateTimeField):
@@ -123,3 +124,43 @@ class EventRegistrationForm(ModelForm):
             "offer_help",
             "comment",
         ]
+
+
+class ContributionForm(ModelForm):
+    public = forms.NullBooleanField(
+        label="Souhaitez-vous rendre publique cette contribution sur le site du CNR ?",
+        widget=forms.RadioSelect(
+            choices=[
+                (True, "Oui"),
+                (False, "Non"),
+            ]
+        ),
+    )
+
+    status = forms.ChoiceField(
+        label="Quel est le statut de la contribution",
+        choices=ContributionStatus.Status.choices,
+    )
+
+    class Meta:
+        model = Contribution
+        fields = ["kind", "title", "description", "public", "status"]
+
+        labels = {
+            "kind": "Quelle est la nature de la contribution",
+            "title": "Quel est le titre de la contribution",
+            "description": "Décrivez la contribution",
+        }
+
+    def save(self, commit=True):
+        contribution = super().save(commit)
+        new_status = self.cleaned_data.get("status")
+
+        # if creation or status change
+        if not contribution.current_status or contribution.current_status.status != new_status:
+            ContributionStatus.objects.create(
+                contribution=contribution,
+                change_on=timezone.now().date(),
+                status=new_status,
+            )
+        return contribution

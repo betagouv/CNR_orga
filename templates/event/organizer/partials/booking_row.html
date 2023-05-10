@@ -12,20 +12,20 @@
     </td>
     <td>
         {% if not booking.confirmed_on and not booking.cancelled_on %}
-        <button hx-post="{% url 'event_organizer_registration_accept' booking.pk %}" id="booking-button-accept-{{ booking.pk }}"
-            hx-target="#booking-row-{{ booking.pk }}"
-            hx-swap="outerHTML"
-            class="fr-btn fr-btn--tertiary-no-outline fr-icon-checkbox-circle-line"
-            title="Accepter">
-            Accepter
-        </button>
-        <button hx-post="{% url 'event_organizer_registration_decline' booking.pk %}" id="booking-button-decline-{{ booking.pk }}"
-            hx-target="#booking-row-{{ booking.pk }}"
-            hx-swap="outerHTML"
-            class="fr-btn fr-btn--tertiary-no-outline fr-icon-close-circle-line"
-            title="Décliner">
-            Décliner
-        </button>
+            <button hx-post="{% url 'event_organizer_registration_accept' booking.pk %}" id="booking-button-accept-{{ booking.pk }}"
+                    hx-target="#booking-row-{{ booking.pk }}"
+                    hx-swap="outerHTML"
+                    class="fr-btn fr-btn--tertiary-no-outline fr-icon-checkbox-circle-line"
+                    title="Accepter">
+                Accepter
+            </button>
+            <button hx-post="{% url 'event_organizer_registration_decline' booking.pk %}" id="booking-button-decline-{{ booking.pk }}"
+                    hx-target="#booking-row-{{ booking.pk }}"
+                    hx-swap="outerHTML"
+                    class="fr-btn fr-btn--tertiary-no-outline fr-icon-close-circle-line"
+                    title="Décliner">
+                Décliner
+            </button>
         {% endif %}
     </td>
 </tr>

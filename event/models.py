@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
+from django.utils.functional import cached_property
 
 
 class CurrentUpcomingManager(models.Manager):
@@ -139,3 +140,48 @@ class Booking(models.Model):
     class Meta:
         unique_together = ("event", "participant")
         ordering = ["id"]
+
+
+class Contribution(models.Model):
+    """
+    Entry recording contributions made during event
+    """
+
+    class Kind(models.TextChoices):
+        PROPOSAL = "proposal", "Proposition"
+        IDEA = "idea", "Idée"
+        PROJECT = "project", "Projet"
+
+    event = models.ForeignKey("Event", related_name="contribute", on_delete=models.CASCADE)
+    kind = models.CharField(
+        max_length=8,
+        choices=Kind.choices,
+        default=Kind.PROPOSAL,
+        verbose_name="Nature",
+    )
+    title = models.CharField(max_length=250, verbose_name="Titre")
+    description = models.TextField(verbose_name="Description")
+    public = models.BooleanField(verbose_name="Publique")
+
+    # TODO: tag ?
+    # TODO: document complémentaires
+
+    @cached_property
+    def current_status(self):
+        return ContributionStatus.objects.filter(contribution=self).last()
+
+
+class ContributionStatus(models.Model):
+    class Status(models.TextChoices):
+        UNSUCCESS = "uns", "Non retenue"
+        STUDY = "stu", "En cours d'étude"
+        SELECT = "sel", "Retenue"
+
+    contribution = models.ForeignKey("Contribution", related_name="contribution_evolution", on_delete=models.CASCADE)
+    change_on = models.DateField()
+    status = models.CharField(
+        max_length=5,
+        choices=Status.choices,
+        default=Status.STUDY,
+        verbose_name="Statut",
+    )
