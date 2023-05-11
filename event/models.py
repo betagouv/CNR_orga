@@ -22,6 +22,7 @@ class Event(models.Model):
     class Theme(models.TextChoices):
         SANTE = "sante", "Santé"
         BIODIV = "biodiv", "Biodiversité"
+        NUM = "num", "Numérique"
 
     class Scale(models.TextChoices):
         LOC = "loc", "Locale"

@@ -23,10 +23,12 @@
           </div>
         </div>
         <div class="fr-grid-row fr-grid-row-gutters fr-mb-5w">
-          <div class="fr-col fr-mr-2w">
-            <h2>Infos pratiques</h2>
-            <p>{{ event.practical_information }}</p>
-          </div>
+          {% if event.practical_information %}
+            <div class="fr-col fr-mr-2w">
+              <h2>Infos pratiques</h2>
+              <p>{{ event.practical_information|linebreaksbr }}</p>
+            </div>
+          {% endif %}
           <div class="fr-col fr-mr-2w">
             <h2>Adresse</h2>
             <div class="fr-grid-row">
@@ -86,14 +88,16 @@
               <img class="fr-responsive-img" src="{{ event.image.url }}" alt="" />
             </div>
           {% endif %}
-          <div class="fr-col fr-mr-2w">
-            <h2>Description</h2>
-            <p>{{ event.description }}</p>
-          </div>
+          {% if event.description %}
+            <div class="fr-col fr-mr-2w">
+              <h2>Description</h2>
+              <p>{{ event.description|linebreaksbr }}</p>
+            </div>
+          {% endif %}
           {% if event.planning %}
             <div class="fr-col fr-mr-2w">
               <h2>Format</h2>
-              <p>{{ event.planning }}</p>
+              <p>{{ event.planning|linebreaksbr }}</p>
             </div>
           {% endif %}
         </div>
@@ -110,7 +114,7 @@
                       <h3 class="fr-card__title">
                         {{ contribution.title }}
                       </h3>
-                      <p class="fr-card__desc">{{ contribution.description }}</p>
+                      <p class="fr-card__desc">{{ contribution.description|linebreaksbr }}</p>
                       <div class="fr-card__start">
                         <ul class="fr-badges-group">
                           <li>
