@@ -36,6 +36,8 @@ HOST_URL = os.getenv("HOST_URL", "127.0.0.1, localhost")
 
 ALLOWED_HOSTS = HOST_URL.replace(" ", "").split(",")
 
+CSRF_TRUSTED_ORIGINS = [f"https://{ host }" for host in ALLOWED_HOSTS]
+
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
