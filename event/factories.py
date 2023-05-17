@@ -30,6 +30,21 @@ class EventFactory(factory.django.DjangoModelFactory):
     booking_online = True
     participant_help = True
 
+    class Params:
+        upcoming = factory.Trait(
+            start=factory.fuzzy.FuzzyDateTime(
+                datetime.now(timezone.utc) + relativedelta(days=1), datetime.now(timezone.utc) + relativedelta(years=2)
+            ),
+            end=factory.LazyAttribute(lambda obj: obj.start + relativedelta(hours=4)),
+        )
+
+        past = factory.Trait(
+            start=factory.fuzzy.FuzzyDateTime(
+                datetime.now(timezone.utc) - relativedelta(years=1), datetime.now(timezone.utc)
+            ),
+            end=factory.LazyAttribute(lambda obj: obj.start + relativedelta(hours=4)),
+        )
+
 
 class BookingFactory(factory.django.DjangoModelFactory):
     class Meta:
