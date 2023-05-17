@@ -1,12 +1,8 @@
 from django.urls import path
 
-from event.views import (
+from event.views.organizer import (
     ContributionCreateView,
     ContributionUpdateView,
-    EventDetailView,
-    EventListView,
-    EventRegistrationDeleteView,
-    EventRegistrationView,
     OrganizerDashboardView,
     OrganizerEventCreateView,
     OrganizerEventDetailView,
@@ -14,6 +10,7 @@ from event.views import (
     OrganizerRegistrationAcceptView,
     OrganizerRegistrationDeclineView,
 )
+from event.views.participant import EventDetailView, EventListView, EventRegistrationDeleteView, EventRegistrationView
 
 
 urlpatterns = [
