@@ -87,7 +87,7 @@ class EventForm(ModelForm):
 class EventListFilterForm(forms.Form):
     theme = forms.ChoiceField(
         label="Thématique",
-        choices=[("", "Selectionner une thématique")] + Event.Theme.choices,
+        choices=[("", "Toutes")] + Event.Theme.choices,
         widget=forms.Select(
             attrs={
                 "class": "fr-select",
@@ -97,10 +97,19 @@ class EventListFilterForm(forms.Form):
     )
     scale = forms.ChoiceField(
         label="Échelle",
-        choices=[("", "Selectionner une échelle")] + Event.Scale.choices,
+        choices=[("", "Toutes")] + Event.Scale.choices,
         widget=forms.Select(
             attrs={
                 "class": "fr-select",
+                "onchange": "this.form.submit()",
+            }
+        ),
+    )
+
+    upcoming = forms.BooleanField(
+        label="À venir uniquement",
+        widget=forms.CheckboxInput(
+            attrs={
                 "onchange": "this.form.submit()",
             }
         ),
