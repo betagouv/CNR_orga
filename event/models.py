@@ -78,6 +78,13 @@ class Event(models.Model):
     start = models.DateTimeField(verbose_name="Date et heure de début")
     end = models.DateTimeField(verbose_name="Date et heure de fin")
 
+    place_name = models.CharField(
+        max_length=100,
+        verbose_name="Lieu",
+        null=True,
+        blank=True,
+    )
+
     address = models.CharField(
         max_length=255,
         verbose_name="Adresse",

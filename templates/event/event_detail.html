@@ -36,6 +36,9 @@
                 <span aria-hidden="true" class="fr-icon-map-pin-2-line"></span>
               </div>
               <div class="fr-col-11 fr-pl-2v">
+                {% if event.place_name %}
+                  <strong>{{ event.place_name }}</strong><br>
+                {% endif %}
                 {{ event.address }}<br>
                 {{ event.zip_code }} {{ event.city }}
               </div>

@@ -66,6 +66,7 @@ class EventForm(ModelForm):
             "scale",
             "start",
             "end",
+            "place_name",
             "address",
             "zip_code",
             "city",

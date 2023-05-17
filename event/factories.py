@@ -24,6 +24,7 @@ class EventFactory(factory.django.DjangoModelFactory):
     )
     end = factory.LazyAttribute(lambda obj: obj.start + relativedelta(hours=4))
 
+    place_name = factory.Faker("sentence", nb_words=3, locale="fr_FR")
     address = factory.Faker("address", locale="fr_FR")
     zip_code = factory.Faker("postcode", locale="fr_FR")
     city = factory.Faker("city", locale="fr_FR")

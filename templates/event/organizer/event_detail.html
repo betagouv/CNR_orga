@@ -3,18 +3,10 @@
 {% block content %}
   <div class="fr-container fr-container--fluid fr-mb-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
-      <div id="contenu" class="fr-col-12 fr-col-md-10 fr-py-12v">
-        <h1>Votre compte organisateur de concertations</h1>
+      <div id="contenu" class="fr-col-12 fr-py-12v">
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
           <div class="fr-col-md-12 fr-col">
-            <p>
-              <span class="fr-icon-account-circle-line" aria-hidden="true"></span>
-              <strong>{{ user.first_name }} {{ user.last_name }}</strong><br>
-              {{ user.email }}
-            </p>
-          </div>
-          <div class="fr-col-md-12 fr-col">
-            <h2>{{ event.subject }}</h2>
+            <h1>{{ event.subject }}</h1>
             <a href="{% url 'event_organizer_dashboard' %}" class="fr-btn fr-btn--secondary" target="_self">Retour</a>
             <a href="{% url 'event_organizer_event_update' event.pk %}" class="fr-btn">Modifier</a>
             <a href="{% url 'event_detail' event.pk %}" class="fr-btn" target="_blank">Voir la page</a>
@@ -47,6 +39,9 @@
                         <span aria-hidden="true" class="fr-icon-map-pin-2-line"></span>
                       </div>
                       <div class="fr-col-11 fr-pl-2v">
+                        {% if event.place_name %}
+                          <strong>{{ event.place_name }}</strong><br>
+                        {% endif %}
                         {{ event.address }}<br>
                         {{ event.zip_code }} {{ event.city }}
                       </div>
