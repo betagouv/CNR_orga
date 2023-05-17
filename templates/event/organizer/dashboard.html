@@ -3,22 +3,20 @@
 {% block content %}
   <div class="fr-container fr-container--fluid fr-mb-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
-      <div id="contenu" class="fr-col-12 fr-col-md-10 fr-py-12v">
-        <h1>Votre compte organisateur de concertations</h1>
+      <div id="contenu" class="fr-col-12 fr-py-12v">
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
-          <div class="fr-col-md-12 fr-col">
-            <p>
-              <span class="fr-icon-account-circle-line" aria-hidden="true"></span>
-              <strong>{{ user.first_name }} {{ user.last_name }}</strong><br>
-              {{ user.email }}
-            </p>
-          </div>
           <div class="fr-col-md-6 fr-col">
             <h2>Vos concertations</h2>
           </div>
           <div class="fr-col-md-6 fr-col">
-            <a href="{% url 'event_organizer_event_create' %}" class="fr-btn" target="_self">Créer une nouvelle concertation</a>
+            <ul class="fr-btns-group--right">
+              <li>
+                <a href="{% url 'event_organizer_event_create' %}" class="fr-btn" target="_self">Créer une nouvelle concertation</a>
+              </li>
+            </ul>
           </div>
+        </div>
+        <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
           {% for event in event_list %}
             <div class="fr-col-md-4 fr-col">
               <div class="fr-card fr-enlarge-link">
@@ -27,7 +25,9 @@
                     <h3 class="fr-card__title">
                       <a href="{% url 'event_organizer_event_detail' event.pk %}">{{ event.subject }}</a>
                     </h3>
-                    <p class="fr-card__desc"></p>
+                    {% if event.place_name %}
+                      <p class="fr-card__desc">{{ event.place_name }}</p>
+                    {% endif %}
                     <div class="fr-card__start">
                       <ul class="fr-badges-group">
                         <li>
