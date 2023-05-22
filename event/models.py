@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
+from taggit.managers import TaggableManager
 
 
 class CurrentUpcomingManager(models.Manager):
@@ -171,7 +172,9 @@ class Contribution(models.Model):
     description = models.TextField(verbose_name="Description")
     public = models.BooleanField(verbose_name="Publique")
 
-    # TODO: tag ?
+    tags = TaggableManager(
+        verbose_name="Étiquettes", help_text="Ajoutez des étiquettes (tags) séparés par des virgules", blank=True
+    )
     # TODO: document complémentaires
 
     @cached_property
