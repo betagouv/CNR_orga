@@ -137,14 +137,15 @@ class EventRegistrationForm(ModelForm):
 
 
 class ContributionForm(ModelForm):
-    public = forms.NullBooleanField(
-        label="Souhaitez-vous rendre publique cette contribution sur le site du CNR ?",
-        widget=forms.RadioSelect(
-            choices=[
-                (True, "Oui"),
-                (False, "Non"),
-            ]
+    public = forms.BooleanField(
+        label="Contribution publique ?",
+        help_text="Publique : en accès à tous",
+        widget=forms.CheckboxInput(
+            attrs={
+                "class": "fr-toggle__input",
+            }
         ),
+        required=False,
     )
 
     status = forms.ChoiceField(
@@ -154,7 +155,7 @@ class ContributionForm(ModelForm):
 
     class Meta:
         model = Contribution
-        fields = ["kind", "title", "description", "public", "status"]
+        fields = ["kind", "title", "description", "public", "status", "tags"]
 
         labels = {
             "kind": "Quelle est la nature de la contribution",

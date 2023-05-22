@@ -1,29 +1,61 @@
 {% extends "base.html" %}
 {% load dsfr_tags %}
 {% block content %}
-    <div class="fr-container fr-container--fluid fr-mb-md-14v">
+    <div class="fr-container fr-mb-md-14v">
         <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
             <div id="contenu" class="fr-col-12 fr-py-12v">
                 <form method="post" enctype="multipart/form-data">{% csrf_token %}
-                    <fieldset class="fr-fieldset">
-                        <legend class="fr-fieldset__legend">
-                            <h2>{% if object %}Modifier la{% else %}Créez une{% endif %} contribution pour votre concertation CNR</h2>
-                        </legend>
-                        {% if form.non_field_errors %}
-                            {% for error in form.non_field_errors %}
-                                <div class="alert alert-danger" role="alert">
-                                    <p class="mb-0">
-                                        {{ error }}
-                                    </p>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                        <div class="fr-fieldset__element">
-                            {% dsfr_form %}
+                    <div class="fr-grid-row fr-grid-row-gutters">
+                        <div class="fr-col-12">
+                            <h1>{% if object %}Modifier la{% else %}Ajouter une{% endif %} contribution</h1>
                         </div>
-                    </fieldset>
-                    <div class="form-actions mb-3">
-                        <input type="submit" class="fr-btn" value="Enregistrer" />
+                        <div class="fr-col-12 fr-col-md-6 fr-pr-md-6w">
+                            <fieldset class="fr-fieldset">
+                                <legend class="fr-fieldset__legend">
+                                    Contenu
+                                </legend>
+                                {% if form.non_field_errors %}
+                                    {% for error in form.non_field_errors %}
+                                        <div class="alert alert-danger" role="alert">
+                                            <p class="mb-0">
+                                                {{ error }}
+                                            </p>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                                <div class="fr-fieldset__element">
+                                    {% dsfr_form_field form.kind %}
+                                    {% dsfr_form_field form.title %}
+                                    {% dsfr_form_field form.description %}
+                                    {% dsfr_form_field form.status %}
+                                </div>
+                            </fieldset>
+                            <div class="form-actions mb-3">
+                                <input type="submit" class="fr-btn" value="Enregistrer" />
+                            </div>
+                        </div>
+                        <div class="fr-col-12 fr-col-md-6 fr-pr-md-6w">
+                            <fieldset class="fr-fieldset">
+                                <legend class="fr-fieldset__legend">
+                                    Paramètres
+                                </legend>
+                                <div class="fr-fieldset__element">
+                                    {% dsfr_form_field form.tags %}
+
+                                    <div class="fr-checkbox-group">
+                                        {{ form.upcoming.errors }}
+                                        {{ form.upcoming }}
+                                        <label class="fr-label" for="{{ form.upcoming.id_for_label }}">{{ form.upcoming.label }}</label>
+                                      </div>
+                                    <div class="fr-toggle">
+                                        {{ form.public }}
+                                        <label class="fr-toggle__label" for="{{ form.public.id_for_label }}">{{ form.public.label }}</label>
+                                        <p class="fr-hint-text">{{ form.public.help_text }}</p>
+                                    </div>
+
+                                </div>
+                            </fieldset>
+                        </div>
                     </div>
                 </form>
             </div>
