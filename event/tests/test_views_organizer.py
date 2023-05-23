@@ -1,9 +1,13 @@
 from django.test import TestCase
 from django.urls import reverse
+from faker import Faker
 
 from event.factories import BookingFactory, ContributionFactory, ContributionStatusFactory, EventFactory
 from event.models import Contribution, ContributionStatus, Event
 from signup.factories import EmailBasedUserFactory
+
+
+faker = Faker("fr_FR")
 
 
 class EventDashboardViewTest(TestCase):
@@ -213,20 +217,28 @@ class EventContributionCreateViewTest(TestCase):
         other_contribution_status = ContributionStatusFactory.build()
         self.assertEqual(Contribution.objects.count(), 0)
         self.assertEqual(ContributionStatus.objects.count(), 0)
+
+        tags_to_submit = faker.sentences(nb=3)
         data = {
             "kind": other_contribution.kind,
             "title": other_contribution.title,
             "description": other_contribution.description,
             "public": other_contribution.public,
             "status": other_contribution_status.status,
+            "tags": ", ".join(tags_to_submit),
         }
+
         response = self.client.post(self.url, data=data, follow=True)
         self.assertRedirects(response, self.detail_url)
         contrib = Contribution.objects.first()
-        self.assertContains(response, contrib.title)
+        self.assertContains(response, contrib.title, html=True)
 
         self.assertEqual(contrib.title, other_contribution.title)
         self.assertEqual(contrib.current_status.status, other_contribution_status.status)
+        self.assertEqual(contrib.public, other_contribution.public)
+
+        tags_list = [f"{tag}" for tag in contrib.tags.all()]
+        self.assertEqual(tags_to_submit.sort(), tags_list.sort())
 
 
 class EventContributionUpdateViewTest(TestCase):
@@ -262,21 +274,27 @@ class EventContributionUpdateViewTest(TestCase):
         other_contribution = ContributionFactory.build()  # for other without save object
         self.assertEqual(Contribution.objects.count(), 1)
         self.assertEqual(ContributionStatus.objects.count(), 1)
+
+        tags_to_submit = faker.sentences(nb=3)
         data = {
             "kind": self.contribution.kind,
             "title": other_contribution.title,
             "description": other_contribution.description,
             "public": self.contribution.public,
             "status": self.contribution.current_status.status,
+            "tags": ", ".join(tags_to_submit),
         }
         response = self.client.post(self.url, data=data, follow=True)
         self.assertRedirects(response, self.detail_url)
-        self.assertContains(response, other_contribution.title)
+        self.assertContains(response, other_contribution.title, html=True)
 
         contrib = Contribution.objects.first()
         self.assertEqual(contrib.title, other_contribution.title)
         self.assertEqual(contrib.description, other_contribution.description)
         self.assertEqual(ContributionStatus.objects.count(), 1)
+
+        tags_list = [f"{tag}" for tag in contrib.tags.all()]
+        self.assertEqual(tags_to_submit.sort(), tags_list.sort())
 
         # Now, update status to see history and current status change
         first_status = self.contribution.current_status.status

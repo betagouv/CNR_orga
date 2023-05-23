@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load dsfr_tags static %}
 {% block content %}
-  <div class="fr-container fr-container--fluid fr-mb-md-14v">
+  <div class="fr-container fr-mb-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
       <div id="contenu" class="fr-col-12 fr-py-12v">
         <div class="fr-grid-row fr-grid-row-gutters fr-mb-5w">
@@ -117,7 +117,16 @@
                       <h3 class="fr-card__title">
                         {{ contribution.title }}
                       </h3>
-                      <p class="fr-card__desc">{{ contribution.description|linebreaksbr }}</p>
+                      <div class="fr-card__desc">
+                        <ul class="fr-tags-group">
+                          {% for tag in contribution.tags.all %}
+                          <li>
+                            <p class="fr-tag">{{ tag }}</p>
+                          </li>
+                          {% endfor %}
+                        </ul>
+                        {{ contribution.description|linebreaksbr }}
+                      </div>
                       <div class="fr-card__start">
                         <ul class="fr-badges-group">
                           <li>

@@ -5,6 +5,7 @@ django-dsfr==0.13.1
 django-htmx==1.14.0
 django-sass-processor==1.2.2
 django-storages==1.13.2
+django-taggit==4.0.0
 dj-database-url==1.2.0
 dj-static==0.0.6
 Pillow==9.5.0
