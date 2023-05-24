@@ -26,11 +26,11 @@ class EventForm(ModelForm):
     )
 
     PUB_CHOICES = [
-        (Event.PubStatus.PUB, "Oui (public - en accès à tous)"),
+        (Event.PubStatus.PUB, "Oui (publique - en accès à tous)"),
         (Event.PubStatus.PRIV, "Non (privée - sur lien seul)"),
     ]
     pub_status = forms.ChoiceField(
-        label="Souhaitez-vous rendre public cette page sur le site du CNR ?",
+        label="Souhaitez-vous rendre publique cette page sur le site du CNR ?",
         widget=forms.RadioSelect,
         choices=PUB_CHOICES,
     )
@@ -46,7 +46,7 @@ class EventForm(ModelForm):
     )
 
     participant_help = forms.NullBooleanField(
-        label="Souhaitez-vous que les participants puissent vous proposer de l'aide lors de la concertation",
+        label="Possibilité pour les participants de s'inscrire également en tant que bénévoles ?",
         widget=forms.RadioSelect(
             choices=[
                 (True, "Oui"),
@@ -81,7 +81,8 @@ class EventForm(ModelForm):
             "subject": "Quel est le sujet de votre concertation ?",
             "description": "Décrivez votre concertation",
             "scale": "À quelle échelle se situe votre concertation ?",
-            "practical_information": "Infos pratiques pour s'y rendre si nécessaire",
+            "practical_information": "Informations pratiques complémentaires",
+            "place_name": "Nom du lieu",
         }
 
 

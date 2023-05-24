@@ -189,8 +189,8 @@ class Contribution(models.Model):
 
 class ContributionStatus(models.Model):
     class Status(models.TextChoices):
-        UNSUCCESS = "uns", "Non retenue"
         STUDY = "stu", "En cours d'étude"
+        UNSUCCESS = "uns", "Non retenue"
         SELECT = "sel", "Retenue"
 
     contribution = models.ForeignKey("Contribution", related_name="contribution_evolution", on_delete=models.CASCADE)
