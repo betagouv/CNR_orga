@@ -147,6 +147,8 @@ class Booking(models.Model):
     cancelled_on = models.DateTimeField(blank=True, null=True)
 
     class Meta:
+        verbose_name = "Participation"
+        verbose_name_plural = "Participations"
         unique_together = ("event", "participant")
         ordering = ["id"]
 
@@ -180,6 +182,9 @@ class Contribution(models.Model):
     @cached_property
     def current_status(self):
         return ContributionStatus.objects.filter(contribution=self).last()
+
+    def __str__(self):
+        return self.title
 
 
 class ContributionStatus(models.Model):

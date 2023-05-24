@@ -13,3 +13,6 @@ class OrganizerEmail(models.Model):
 class EmailBasedUser(AbstractUser):
     email = models.EmailField(_("email address"), unique=True)
     is_organizer = models.BooleanField("Est organisateur ?", default=False)
+
+    def __str__(self):
+        return f"{self.get_full_name()} ({self.email})"
