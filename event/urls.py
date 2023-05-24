@@ -10,7 +10,13 @@ from event.views.organizer import (
     OrganizerRegistrationAcceptView,
     OrganizerRegistrationDeclineView,
 )
-from event.views.participant import EventDetailView, EventListView, EventRegistrationDeleteView, EventRegistrationView
+from event.views.participant import (
+    ContributionListView,
+    EventDetailView,
+    EventListView,
+    EventRegistrationDeleteView,
+    EventRegistrationView,
+)
 
 
 urlpatterns = [
@@ -42,6 +48,7 @@ urlpatterns = [
     # Participant
     path("list", EventListView.as_view(), name="event_list"),
     path("detail/<int:pk>", EventDetailView.as_view(), name="event_detail"),
+    path("contributions", ContributionListView.as_view(), name="contribution_list"),
     path("registration/<int:pk>", EventRegistrationView.as_view(), name="event_registration"),
     path("registration/delete/<int:pk>", EventRegistrationDeleteView.as_view(), name="event_registration_delete"),
 ]

@@ -5,7 +5,7 @@ from django.views.generic import DetailView, FormView
 from django.views.generic.edit import DeleteView
 from django.views.generic.list import ListView
 
-from event.forms import EventListFilterForm, EventRegistrationForm
+from event.forms import ContributionListFilterForm, EventListFilterForm, EventRegistrationForm
 from event.models import Booking, Contribution, Event
 
 
@@ -43,6 +43,7 @@ class EventListView(ListView):
         context["form"] = EventListFilterForm(
             initial={"theme": self.get_theme(), "scale": self.get_scale(), "upcoming": self.get_upcoming()}
         )
+        context["current_page_event_list"] = True
         return context
 
 
@@ -90,3 +91,36 @@ class EventRegistrationDeleteView(LoginRequiredMixin, UserPassesTestMixin, Delet
 
     def get_success_url(self):
         return reverse("event_detail", kwargs={"pk": self.object.event.pk})
+
+
+class ContributionListView(ListView):
+    model = Contribution
+    paginate_by = 4
+
+    def get_theme(self):
+        filter_theme = self.request.GET.get("theme", None)
+        return filter_theme if filter_theme in Event.Theme.values else None
+
+    # TODO : set tags filter
+
+    def get_scale(self):
+        filter_scale = self.request.GET.get("scale", None)
+        return filter_scale if filter_scale in Event.Scale.values else None
+
+    def get_queryset(self):
+        qs = Contribution.objects.filter(event__pub_status=Event.PubStatus.PUB)
+
+        filter_theme = self.get_theme()
+        if filter_theme:
+            qs = qs.filter(event__theme=filter_theme)
+
+        filter_scale = self.get_scale()
+        if filter_scale:
+            qs = qs.filter(event__scale=filter_scale)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["form"] = ContributionListFilterForm(initial={"theme": self.get_theme(), "scale": self.get_scale()})
+        context["current_page_contribution_list"] = True
+        return context

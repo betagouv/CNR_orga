@@ -118,6 +118,29 @@ class EventListFilterForm(forms.Form):
     )
 
 
+class ContributionListFilterForm(forms.Form):
+    theme = forms.ChoiceField(
+        label="Thématique",
+        choices=[("", "Toutes")] + Event.Theme.choices,
+        widget=forms.Select(
+            attrs={
+                "class": "fr-select",
+                "onchange": "this.form.submit()",
+            }
+        ),
+    )
+    scale = forms.ChoiceField(
+        label="Échelle",
+        choices=[("", "Toutes")] + Event.Scale.choices,
+        widget=forms.Select(
+            attrs={
+                "class": "fr-select",
+                "onchange": "this.form.submit()",
+            }
+        ),
+    )
+
+
 class EventRegistrationForm(ModelForm):
     offer_help = forms.NullBooleanField(
         label="Souhaitez-vous proposer votre aide (facilitation, restitution, autre) ?",

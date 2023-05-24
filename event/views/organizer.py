@@ -23,6 +23,11 @@ class OrganizerDashboardView(OrganizerMixin, ListView):
         qs = Event.objects.filter(owner=self.request.user).order_by("start")
         return qs
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["current_page_organizer_dashboard"] = True
+        return context
+
 
 class OrganizerEventCreateView(OrganizerMixin, FormView):
     template_name = "event/organizer/event_edit.html"

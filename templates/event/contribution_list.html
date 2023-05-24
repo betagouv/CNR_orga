@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load dsfr_tags static %}
+{% block content %}
+  <div class="fr-container fr-mb-md-14v">
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+      <div id="contenu" class="fr-col-12 fr-py-12v">
+        <h1>Liste des contributions</h1>
+        <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
+          <div class="fr-col-3">
+            <form method="GET">
+              <div class="fr-select-group">
+                {{ form.theme.errors }}
+                <label class="fr-label" for="{{ form.theme.id_for_label }}">{{ form.theme.label }}</label>
+                {{ form.theme }}
+              </div>
+              <div class="fr-checkbox-group">
+                {{ form.scale.errors }}
+                <label class="fr-label" for="{{ form.scale.id_for_label }}">{{ form.scale.label }}</label>
+                {{ form.scale }}
+              </div>
+            </form>
+          </div>
+          <div class="fr-col-9">
+            <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
+              {% for contribution in contribution_list %}
+                <div class="fr-col-md-6 fr-col">
+                  <div class="fr-card fr-enlarge-link">
+                    <div class="fr-card__body">
+                      <div class="fr-card__content">
+                        <h3 class="fr-card__title">
+                          {{ contribution.title }}
+                        </h3>
+                        <div class="fr-card__desc">
+                          <ul class="fr-tags-group">
+                            {% for tag in contribution.tags.all %}
+                            <li>
+                              <p class="fr-tag">{{ tag }}</p>
+                            </li>
+                            {% endfor %}
+                          </ul>
+                          {{ contribution.description|linebreaksbr }}
+                        </div>
+                        <div class="fr-card__start">
+                          <ul class="fr-badges-group">
+                            <li>
+                              <p class="fr-badge">{{ contribution.get_kind_display }}</p>
+                            </li>
+                            <li>
+                              <p class="fr-badge fr-badge--info fr-badge--no-icon">{{ contribution.current_status.get_status_display }}</p>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {% empty %}
+                <div class="fr-col-md-12 fr-col">
+                  <p>Retrouvez bientôt de nouvelles contributions...</p>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--right fr-mt-6v fr-mb-6v">
+      <div class="col">
+        {% dsfr_pagination page_obj %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
