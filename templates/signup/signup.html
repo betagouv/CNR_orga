@@ -4,7 +4,7 @@
 {% block content %}
   <div class="fr-container fr-mb-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
-      <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+      <div class="fr-col-12 fr-col-md-10 fr-col-lg-8">
         <div class="fr-container fr-background-alt--grey fr-px-md-0 fr-py-10v fr-py-md-14v">
           <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
             <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
@@ -66,6 +66,17 @@
                           {% endif %}
                           {% if form.password2.help_text %}
                             <div class="help"{% if form.password2.id_for_label %} id="{{ form.password2.id_for_label }}_helptext"{% endif %}>{{ form.password2.help_text|safe }}</div>
+                          {% endif %}
+                        </div>
+                      </div>
+                      <div class="fr-fieldset__element">
+                        <div class="fr-checkbox-group">
+                          <input type="checkbox" name="{{ form.cgu.name }}" class="fr-input" required="" id="{{ form.cgu.id_for_label }}">
+                          <label class="fr-label" for="{{ form.cgu.id_for_label }}"><a href="https://conseil-refondation.fr/cgu/" target="_blank">CGU</a> - J'accepte de recevoir de l'information *</label>
+                          {% if form.cgu.errors %}
+                            <div id="{{ form.cgu.auto_id }}-desc-error" class="fr-error-text">
+                              {{ form.cgu.errors }}
+                            </div>
                           {% endif %}
                         </div>
                       </div>

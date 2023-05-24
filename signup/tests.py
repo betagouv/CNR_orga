@@ -51,6 +51,20 @@ class SignupTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Cette adresse email est déjà utilisée")
 
+    def test_signup_without_cgu_checked(self):
+        new_user = EmailBasedUserFactory.stub()
+        form_data = {
+            "first_name": new_user.first_name,
+            "last_name": new_user.last_name,
+            "email": new_user.email,
+            "password1": DEFAULT_PASSWORD,
+            "password2": DEFAULT_PASSWORD,
+        }
+
+        response = self.client.post(self.url, data=form_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Ce champ est obligatoire.")
+
     def test_signup_with_unknown_email(self):
         self.assertEqual(EmailBasedUser.objects.count(), 3)
         response = self.client.get(self.url)
@@ -63,6 +77,7 @@ class SignupTest(TestCase):
             "email": new_user.email,
             "password1": DEFAULT_PASSWORD,
             "password2": DEFAULT_PASSWORD,
+            "cgu": True,
         }
         response = self.client.post(self.url, data=form_data)
         self.assertEqual(response.status_code, 302)
@@ -87,6 +102,7 @@ class SignupTest(TestCase):
             "email": new_user.email,
             "password1": DEFAULT_PASSWORD,
             "password2": DEFAULT_PASSWORD,
+            "cgu": True,
         }
 
         response = self.client.post(self.url, data=form_data)

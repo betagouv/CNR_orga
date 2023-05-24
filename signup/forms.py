@@ -16,10 +16,11 @@ class SignupUserForm(UserCreationForm):
     )
     last_name = forms.CharField(label="Nom", required=True, widget=forms.TextInput(attrs={"class": "fr-input"}))
     email = forms.EmailField(required=True, widget=forms.TextInput(attrs={"class": "fr-input"}))
+    cgu = forms.BooleanField(label="J'accepte de recevoir de l'information")
 
     class Meta:
         model = get_user_model()
-        fields = ("first_name", "last_name", "email", "password1", "password2")
+        fields = ("first_name", "last_name", "email", "password1", "password2", "cgu")
 
     def clean(self):
         user_model = get_user_model()
