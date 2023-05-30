@@ -109,12 +109,20 @@ class ContributionCreateView(OrganizerMixin, FormView):
         return super(ContributionCreateView, self).form_valid(form)
 
     def get_success_url(self):
+        if "submitandadd" in self.request.POST:
+            return reverse("event_organizer_contribution_create", kwargs={"event_pk": self.kwargs.get("event_pk")})
+
         return reverse("event_organizer_event_detail", kwargs={"pk": self.kwargs.get("event_pk")})
 
 
 class ContributionUpdateView(OrganizerMixin, UpdateView):
     template_name = "event/organizer/contribution_edit.html"
     form_class = ContributionForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["event"] = self.object.event
+        return context
 
     def get_object(self, *args, **kwargs):
         return get_object_or_404(Contribution, pk=self.kwargs["pk"], event__owner=self.request.user)

@@ -213,6 +213,10 @@ class EventContributionCreateViewTest(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
+        # Is there the return link
+        self.assertContains(response, "Retour à la liste des contributions")
+        self.assertContains(response, self.detail_url)
+
         other_contribution = ContributionFactory.build()  # for generate data without save object
         other_contribution_status = ContributionStatusFactory.build()
         self.assertEqual(Contribution.objects.count(), 0)
@@ -239,6 +243,30 @@ class EventContributionCreateViewTest(TestCase):
 
         tags_list = [f"{tag}" for tag in contrib.tags.all()]
         self.assertEqual(tags_to_submit.sort(), tags_list.sort())
+
+    def test_user_can_chain_contributions_creation(self):
+        self.client.force_login(self.user)
+
+        for _ in range(3):
+            other_contribution = ContributionFactory.build()  # for generate data without save object
+            other_contribution_status = ContributionStatusFactory.build()
+
+            tags_to_submit = faker.sentences(nb=3)
+            data = {
+                "kind": other_contribution.kind,
+                "title": other_contribution.title,
+                "description": other_contribution.description,
+                "public": other_contribution.public,
+                "status": other_contribution_status.status,
+                "tags": ", ".join(tags_to_submit),
+                "submitandadd": "Enregistrer et ajouter une nouvelle contribution",
+            }
+
+            response = self.client.post(self.url, data=data, follow=True)
+            self.assertRedirects(response, self.url)
+
+        self.assertEqual(Contribution.objects.count(), 3)
+        self.assertEqual(ContributionStatus.objects.count(), 3)
 
 
 class EventContributionUpdateViewTest(TestCase):
