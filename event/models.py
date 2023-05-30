@@ -21,9 +21,17 @@ class Event(models.Model):
         UNPUB = "unpub", "Non publié"
 
     class Theme(models.TextChoices):
-        SANTE = "sante", "Santé"
-        BIODIV = "biodiv", "Biodiversité"
+        ASSIST = "assist", "Assises du travail"
+        VIEILL = "vieill", "Bien vieillir"
+        BIODIV = "biodiv", "Climat et Biodiversité"
+        ECOLE = "ecole", "École"
+        FRATRA = "fratra", "France Travail"
+        JEUNES = "jeunes", "Jeunesse"
+        LOGEME = "logeme", "Logement"
+        PROSOC = "prosoc", "Modèle productif et social"
         NUM = "num", "Numérique"
+        ENFANC = "enfanc", "Petite enfance"
+        SANTE = "sante", "Santé"
 
     class Scale(models.TextChoices):
         LOC = "loc", "Locale"
