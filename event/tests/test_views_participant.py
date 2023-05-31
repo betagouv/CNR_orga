@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from event.factories import EventFactory
-from event.models import Booking, Event
+from event.factories import ContributionFactory, EventFactory
+from event.models import Booking, Contribution, Event
 from signup.factories import EmailBasedUserFactory
 
 
@@ -24,8 +24,8 @@ class EventListViewTest(TestCase):
         for event in self.upcoming_priv_events + self.past_priv_events:
             self.assertNotContains(response, event.subject, html=True)
 
-    def test_list_page_upcomin_filter(self):
-        # list incoming events
+    def test_list_page_upcoming_filter(self):
+        # list upcoming events
         response = self.client.get(self.url, {"upcoming": "on"})
         for event in self.upcoming_events:
             self.assertContains(response, event.subject, html=True)
@@ -102,3 +102,77 @@ class EventRegistrationViewTest(TestCase):
         self.assertContains(response, "Participer")
         self.assertContains(response, self.register_url)
         self.assertNotContains(response, "Se désinscrire")
+
+
+class ContributionListViewTest(TestCase):
+    def setUp(self):
+        self.url = reverse("contribution_list")
+        self.biodiv_contributions = ContributionFactory.create_batch(
+            2,
+            event__theme=Event.Theme.BIODIV,
+            event__pub_status=Event.PubStatus.PUB,
+            public=True,
+            tags=["tag1", "tag2"],
+        )
+        self.sante_contributions = ContributionFactory.create_batch(
+            2,
+            event__theme=Event.Theme.SANTE,
+            event__pub_status=Event.PubStatus.PUB,
+            public=True,
+            tags=["tag3", "tag4"],
+        )
+        self.sante_private_contributions = ContributionFactory.create_batch(
+            3, event__theme=Event.Theme.SANTE, public=False
+        )
+        self.sante_private_event_contributions = ContributionFactory.create_batch(
+            3, event__theme=Event.Theme.SANTE, event__pub_status=Event.PubStatus.UNPUB, public=True
+        )
+
+    def test_anonymous_user_can_see_list_page(self):
+        # list all public contributions
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        for contribution in self.biodiv_contributions + self.sante_contributions:
+            self.assertContains(response, contribution.title, html=True)
+
+        for contribution in self.sante_private_contributions + self.sante_private_event_contributions:
+            self.assertNotContains(response, contribution.title, html=True)
+
+    def test_list_page_theme_filter(self):
+        # list filter by theme
+        response = self.client.get(self.url, {"theme": Event.Theme.SANTE})
+        for contribution in self.sante_contributions:
+            self.assertContains(response, contribution.title, html=True)
+
+        for contribution in self.biodiv_contributions + self.sante_private_contributions:
+            self.assertNotContains(response, contribution.title, html=True)
+
+    def test_list_page_scale_filter(self):
+        scale = Contribution.objects.filter(public=True).first().event.scale
+        response = self.client.get(self.url, {"scale": scale})
+        contributions = Contribution.objects.filter(
+            event__pub_status=Event.PubStatus.PUB, public=True, event__scale=scale
+        )
+        self.assertGreaterEqual(contributions.count(), 1)
+        for contribution in contributions:
+            self.assertContains(response, contribution.title, html=True)
+
+        contributions = Contribution.objects.filter(event__pub_status=Event.PubStatus.PUB, public=True).exclude(
+            event__scale=scale
+        )
+        self.assertGreaterEqual(contributions.count(), 1)
+        for contribution in contributions:
+            self.assertNotContains(response, contribution.title, html=True)
+
+    def test_list_page_tag_filter(self):
+        response = self.client.get(self.url, {"tag": "tag1"})
+        self.assertEqual(response.status_code, 200)
+
+        for contribution in self.biodiv_contributions:
+            self.assertContains(response, contribution.title, html=True)
+
+        for contribution in (
+            self.sante_contributions + self.sante_private_contributions + self.sante_private_event_contributions
+        ):
+            self.assertNotContains(response, contribution.title, html=True)
