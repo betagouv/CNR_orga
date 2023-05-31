@@ -95,6 +95,11 @@ class ContributionCreateView(OrganizerMixin, FormView):
     template_name = "event/organizer/contribution_edit.html"
     form_class = ContributionForm
 
+    def get_initial(self):
+        initial = super().get_initial()
+        initial["public"] = True
+        return initial
+
     def get_event(self):
         return get_object_or_404(Event, pk=self.kwargs.get("event_pk"), owner=self.request.user)
 
