@@ -111,7 +111,7 @@ class ContributionListView(ListView):
         return filter_scale if filter_scale in Event.Scale.values else None
 
     def get_queryset(self):
-        qs = Contribution.objects.filter(event__pub_status=Event.PubStatus.PUB)
+        qs = Contribution.objects.filter(event__pub_status=Event.PubStatus.PUB, public=True)
 
         filter_theme = self.get_theme()
         if filter_theme:
