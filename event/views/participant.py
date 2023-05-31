@@ -135,5 +135,11 @@ class ContributionListView(ListView):
         return context
 
 
-class ContributionDetailView(DetailView):
+class ContributionDetailView(UserPassesTestMixin, DetailView):
     model = Contribution
+
+    def test_func(self):
+        if self.request.user.is_authenticated and self.request.user == self.get_object().event.owner:
+            return True
+
+        return self.get_object().public

@@ -176,3 +176,20 @@ class ContributionListViewTest(TestCase):
             self.sante_contributions + self.sante_private_contributions + self.sante_private_event_contributions
         ):
             self.assertNotContains(response, contribution.title, html=True)
+
+
+class ContributionDetailViewTest(TestCase):
+    def test_anonymous_user_cannot_see_not_public_contribution(self):
+        contribution = ContributionFactory(public=False)
+        url = reverse("contribution_detail", kwargs={"pk": contribution.pk})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f'{reverse("login")}?next={url}')
+
+    def test_anonymous_user_can_see_public_contribution(self):
+        contribution = ContributionFactory(public=True)
+        url = reverse("contribution_detail", kwargs={"pk": contribution.pk})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
