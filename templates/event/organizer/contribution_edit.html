@@ -31,12 +31,6 @@
                                     {% dsfr_form_field form.status %}
                                 </div>
                             </fieldset>
-                            <div class="form-actions mb-3">
-                                <input type="submit" class="fr-btn" name="submit" value="Enregistrer" />
-                                {% if not object %}
-                                    <input type="submit" class="fr-btn fr-btn--secondary" name="submitandadd" value="Enregistrer et ajouter une nouvelle contribution" />
-                                {% endif %}
-                            </div>
                         </div>
                         <div class="fr-col-12 fr-col-md-6 fr-pr-md-6w">
                             <fieldset class="fr-fieldset">
@@ -59,6 +53,14 @@
 
                                 </div>
                             </fieldset>
+                        </div>
+                        <div class="fr-col-12">
+                            <div class="form-actions mb-3">
+                                <input type="submit" class="fr-btn fr-mb-2v" name="submit" value="Enregistrer" />
+                                {% if not object %}
+                                    <input type="submit" class="fr-btn fr-btn--secondary" name="submitandadd" value="Enregistrer et ajouter une nouvelle contribution" />
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </form>
