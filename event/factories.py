@@ -80,6 +80,14 @@ class ContributionFactory(factory.django.DjangoModelFactory):
     description = factory.Faker("text", locale="fr_FR")
     public = factory.Faker("pybool")
 
+    @factory.post_generation
+    def tags(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        if extracted:
+            self.tags.add(*extracted)
+
 
 class ContributionStatusFactory(factory.django.DjangoModelFactory):
     class Meta:
