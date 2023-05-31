@@ -16,12 +16,14 @@
                     {% endif %}
                 </ul>
                 {{ contribution.description|linebreaksbr|truncatechars:120 }}
-                <p class="fr-mt-2w">
-                    #
-                    {% for tag in contribution.tags.all %}
-                        {{ tag }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </p>
+                {% if contribution.tags.count %}
+                    <p class="fr-mt-2w">
+                        #
+                        {% for tag in contribution.tags.all %}
+                            {{ tag }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                {% endif %}
             </div>
             <div class="fr-card__start">
                 <ul class="fr-badges-group">
