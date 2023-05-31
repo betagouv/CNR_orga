@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.views.generic import DetailView, FormView
 from django.views.generic.edit import DeleteView
 from django.views.generic.list import ListView
+from taggit.models import Tag
 
 from event.forms import ContributionListFilterForm, EventListFilterForm, EventRegistrationForm
 from event.models import Booking, Contribution, Event
@@ -55,7 +56,7 @@ class EventDetailView(DetailView):
         if self.request.user.is_authenticated:
             context["booking"] = Booking.objects.filter(event=self.object, participant=self.request.user).first()
 
-        context["contributions"] = Contribution.objects.filter(event=self.object, public=True)
+        context["contributions"] = Contribution.objects.filter(event=self.object, public=True).prefetch_related("tags")
         return context
 
 
@@ -101,7 +102,9 @@ class ContributionListView(ListView):
         filter_theme = self.request.GET.get("theme", None)
         return filter_theme if filter_theme in Event.Theme.values else None
 
-    # TODO : set tags filter
+    def get_tag(self):
+        filter_tag = self.request.GET.get("tag", None)
+        return filter_tag if (filter_tag,) in Tag.objects.values_list("slug") else None
 
     def get_scale(self):
         filter_scale = self.request.GET.get("scale", None)
@@ -114,13 +117,23 @@ class ContributionListView(ListView):
         if filter_theme:
             qs = qs.filter(event__theme=filter_theme)
 
+        filter_tag = self.get_tag()
+        if filter_tag:
+            qs = qs.filter(tags__slug=filter_tag)
+
         filter_scale = self.get_scale()
         if filter_scale:
             qs = qs.filter(event__scale=filter_scale)
-        return qs
+        return qs.order_by("title")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context["form"] = ContributionListFilterForm(initial={"theme": self.get_theme(), "scale": self.get_scale()})
+        context["form"] = ContributionListFilterForm(
+            initial={"theme": self.get_theme(), "tag": self.get_tag(), "scale": self.get_scale()}
+        )
         context["current_page_contribution_list"] = True
         return context
+
+
+class ContributionDetailView(DetailView):
+    model = Contribution

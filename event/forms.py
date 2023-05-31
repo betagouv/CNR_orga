@@ -2,6 +2,7 @@ from django import forms
 from django.forms.fields import SplitDateTimeField
 from django.forms.models import ModelForm
 from django.utils import timezone
+from taggit.models import Tag
 
 from event.models import Booking, Contribution, ContributionStatus, Event
 
@@ -129,6 +130,17 @@ class ContributionListFilterForm(forms.Form):
             }
         ),
     )
+
+    tag = forms.ChoiceField(
+        label="Mots clés",
+        widget=forms.Select(
+            attrs={
+                "class": "fr-select",
+                "onchange": "this.form.submit()",
+            }
+        ),
+    )
+
     scale = forms.ChoiceField(
         label="Échelle",
         choices=[("", "Toutes")] + Event.Scale.choices,
@@ -139,6 +151,15 @@ class ContributionListFilterForm(forms.Form):
             }
         ),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["tag"].choices = [("", "Tous")] + list(self._get_choices_for_tag())
+
+    def _get_choices_for_tag(self):
+        tags = Tag.objects.all().order_by("name")
+        # TODO : filter for only display used tag
+        return tags.values_list("slug", "name")
 
 
 class EventRegistrationForm(ModelForm):

@@ -13,7 +13,12 @@
                 <label class="fr-label" for="{{ form.theme.id_for_label }}">{{ form.theme.label }}</label>
                 {{ form.theme }}
               </div>
-              <div class="fr-checkbox-group">
+              <div class="fr-select-group">
+                {{ form.tag.errors }}
+                <label class="fr-label" for="{{ form.tag.id_for_label }}">{{ form.tag.label }}</label>
+                {{ form.tag }}
+              </div>
+              <div class="fr-select-group">
                 {{ form.scale.errors }}
                 <label class="fr-label" for="{{ form.scale.id_for_label }}">{{ form.scale.label }}</label>
                 {{ form.scale }}
@@ -24,35 +29,7 @@
             <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
               {% for contribution in contribution_list %}
                 <div class="fr-col-md-6 fr-col">
-                  <div class="fr-card fr-enlarge-link">
-                    <div class="fr-card__body">
-                      <div class="fr-card__content">
-                        <h3 class="fr-card__title">
-                          {{ contribution.title }}
-                        </h3>
-                        <div class="fr-card__desc">
-                          <ul class="fr-tags-group">
-                            {% for tag in contribution.tags.all %}
-                            <li>
-                              <p class="fr-tag">{{ tag }}</p>
-                            </li>
-                            {% endfor %}
-                          </ul>
-                          {{ contribution.description|linebreaksbr }}
-                        </div>
-                        <div class="fr-card__start">
-                          <ul class="fr-badges-group">
-                            <li>
-                              <p class="fr-badge">{{ contribution.get_kind_display }}</p>
-                            </li>
-                            <li>
-                              <p class="fr-badge fr-badge--info fr-badge--no-icon">{{ contribution.current_status.get_status_display }}</p>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  {% include "event/partials/contribution_card.html" %}
                 </div>
               {% empty %}
                 <div class="fr-col-md-12 fr-col">
