@@ -9,7 +9,7 @@
             <h1>{{ event.subject }}</h1>
             <ul class="fr-badges-group">
               <li>
-                <p class="fr-badge fr-badge--green-menthe">{{ event.theme }}</p>
+                <p class="fr-badge fr-badge--green-menthe">{{ event.get_theme_display }}</p>
               </li>
               {% if event.sub_theme %}
                 <li>
@@ -111,42 +111,7 @@
             </div>
             {% for contribution in contributions %}
               <div class="fr-col fr-col-md-4">
-                <div class="fr-card">
-                  <div class="fr-card__body">
-                    <div class="fr-card__content">
-                      <h3 class="fr-card__title">
-                        {{ contribution.title }}
-                      </h3>
-                      <div class="fr-card__desc">
-                        <ul class="fr-tags-group">
-                          {% for tag in contribution.tags.all %}
-                          <li>
-                            <p class="fr-tag">{{ tag }}</p>
-                          </li>
-                          {% endfor %}
-                        </ul>
-                        {{ contribution.description|linebreaksbr }}
-                      </div>
-                      <div class="fr-card__start">
-                        <ul class="fr-badges-group">
-                          <li>
-                            <p class="fr-badge">{{ contribution.get_kind_display }}</p>
-                          </li>
-                          <li>
-                            <p class="fr-badge fr-badge--info fr-badge--no-icon">{{ contribution.current_status.get_status_display }}</p>
-                          </li>
-                          <li>
-                            {% if contribution.public %}
-                              <p class="fr-badge fr-badge--success fr-badge--no-icon">Publique</p>
-                            {% else %}
-                              <p class="fr-badge fr-badge--error fr-badge--no-icon">Privée</p>
-                            {% endif %}
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                {% include "event/partials/contribution_card.html" %}
               </div>
             {% endfor %}
           </div>

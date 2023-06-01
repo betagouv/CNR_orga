@@ -34,7 +34,25 @@
 {# endblock burger_menu #}
 
 {% block main_menu %}
-    {% if user.is_authenticated and user.is_organizer %}
-        {% include "event/organizer/partials/header_organizer.html" %}
-    {% endif %}
+    <div class="fr-header__menu fr-modal" id="fr-menu-mobile" aria-labelledby="fr-btn-menu-mobile">
+        <div class="fr-container">
+            <button type="button" class="fr-btn--close fr-btn" aria-controls="fr-menu-mobile">Fermer</button>
+            <div class="fr-header__menu-links"></div>
+            <nav class="fr-nav" id="fr-navigation" aria-label="Menu principal">
+                <ul class="fr-nav__list">
+                    <li class="fr-nav__item">
+                        <a href="{% url 'event_list' %}" class="fr-nav__link" target="_self"{% if current_page_event_list %} aria-current="page"{% endif %}>Les concertations</a>
+                    </li>
+                    <li class="fr-nav__item">
+                        <a href="{% url 'contribution_list' %}" class="fr-nav__link" target="_self"{% if current_page_contribution_list %} aria-current="page"{% endif %}>Les contributions</a>
+                    </li>
+                    {% if user.is_authenticated and user.is_organizer %}
+                        <li class="fr-nav__item">
+                            <a href="{% url 'event_organizer_dashboard' %}" class="fr-nav__link" target="_self"{% if current_page_organizer_dashboard %} aria-current="page"{% endif %}>Tableau de bord organisateur</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
 {% endblock main_menu %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load dsfr_tags static %}
+{% block content %}
+  <div class="fr-container fr-mb-md-14v">
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+      <div id="contenu" class="fr-col-12 fr-py-12v">
+        <div class="fr-grid-row fr-grid-row-gutters fr-mb-5w">
+          <div class="fr-col-12">
+            <ul class="fr-badges-group">
+              <li>
+                <p class="fr-badge fr-badge--new fr-badge--no-icon">{{ contribution.event.get_scale_display }}</p>
+              </li>
+              <li>
+                <p class="fr-badge fr-badge--info fr-badge--no-icon">{{ contribution.current_status.get_status_display }}</p>
+              </li>
+            </ul>
+            <h1>{{ contribution.title }}</h1>
+            <ul class="fr-tags-group">
+              <li>
+                <p class="fr-tag">{{ contribution.event.get_theme_display }}</p>
+              </li>
+              {% if contribution.event.sub_theme %}
+                <li>
+                  <p class="fr-tag">{{ contribution.event.sub_theme }}</p>
+                </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+        <div class="fr-grid-row fr-grid-row-gutters fr-mb-5w">
+          <div class="fr-col-12 fr-col-md-8 fr-pr-md-6w">
+            <h2>Description de la contribution</h2>
+            <p>{{ contribution.description|linebreaksbr }}</p>
+          </div>
+          <div class="fr-col-12 fr-col-md-4">
+            {% include "event/partials/event_card.html" with event=contribution.event %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

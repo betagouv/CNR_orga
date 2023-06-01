@@ -4,7 +4,7 @@
   <div class="fr-container fr-mb-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
       <div id="contenu" class="fr-col-12 fr-py-12v">
-        <h1>Liste des concertations</h1>
+        <h1>Liste des contributions</h1>
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
           <div class="fr-col-3">
             <form method="GET">
@@ -14,31 +14,36 @@
                 {{ form.theme }}
               </div>
               <div class="fr-select-group">
+                {{ form.tag.errors }}
+                <label class="fr-label" for="{{ form.tag.id_for_label }}">{{ form.tag.label }}</label>
+                {{ form.tag }}
+              </div>
+              <div class="fr-select-group">
                 {{ form.scale.errors }}
                 <label class="fr-label" for="{{ form.scale.id_for_label }}">{{ form.scale.label }}</label>
                 {{ form.scale }}
-              </div>
-              <div class="fr-checkbox-group">
-                {{ form.upcoming.errors }}
-                {{ form.upcoming }}
-                <label class="fr-label" for="{{ form.upcoming.id_for_label }}">{{ form.upcoming.label }}</label>
               </div>
             </form>
           </div>
           <div class="fr-col-9">
             <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
-              {% for event in event_list %}
+              {% for contribution in contribution_list %}
                 <div class="fr-col-md-6 fr-col">
-                  {% include "event/partials/event_card.html" %}
+                  {% include "event/partials/contribution_card.html" %}
                 </div>
               {% empty %}
                 <div class="fr-col-md-12 fr-col">
-                  <p>Retrouvez bientôt de nouvelles concertations...</p>
+                  <p>Retrouvez bientôt de nouvelles contributions...</p>
                 </div>
               {% endfor %}
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--right fr-mt-6v fr-mb-6v">
+      <div class="col">
+        {% dsfr_pagination page_obj %}
       </div>
     </div>
   </div>
