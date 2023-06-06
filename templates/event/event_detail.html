@@ -1,121 +1,139 @@
 {% extends "base.html" %}
 {% load dsfr_tags static %}
 {% block content %}
+  <div {% if event.image %} class="cover-baseline" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url({{ event.image.url }})" {% endif %}>
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+        <div class="fr-col-12 fr-py-12v">
+          <div class="fr-grid-row fr-grid-row-gutters">
+            <div class="fr-col-12">
+              <ul class="fr-badges-group">
+                <li>
+                  <p class="fr-badge fr-badge--new fr-badge--no-icon">{{ event.get_scale_display }}</p>
+                </li>
+              </ul>
+              <h1>{{ event.subject }}</h1>
+              <ul class="fr-tags-group">
+                <li>
+                    <p class="fr-tag" target="_self">{{ event.get_theme_display }}</p>
+                </li>
+                {% if event.sub_theme %}
+                <li>
+                    <p class="fr-tag">{{ event.sub_theme }}</p>
+                </li>
+                {% endif %}
+            </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="fr-container fr-mb-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
-      <div id="contenu" class="fr-col-12 fr-py-12v">
+      <div class="fr-col-12 fr-py-12v">
         <div class="fr-grid-row fr-grid-row-gutters fr-mb-5w">
-          <div class="fr-col-12">
-            <h1>{{ event.subject }}</h1>
-            <ul class="fr-badges-group">
-              <li>
-                <p class="fr-badge fr-badge--green-menthe">{{ event.get_theme_display }}</p>
-              </li>
-              {% if event.sub_theme %}
-                <li>
-                  <p class="fr-badge fr-badge--blue-ecume">{{ event.sub_theme }}</p>
-                </li>
-              {% endif %}
-              <li>
-                <p class="fr-badge">{{ event.get_scale_display }}</p>
-              </li>
-            </ul>
+          <div class="fr-col-12 fr-col-md-8">
+            {% if event.description %}
+              <h2>Présentation de la concertation</h2>
+              <p>{{ event.description|linebreaksbr }}</p>
+            {% endif %}
+            {% if event.planning %}
+              <h2>Planning</h2>
+              <p>{{ event.planning|linebreaksbr }}</p>
+            {% endif %}
+            {% if event.practical_information %}
+              <div class="bordered fr-p-2w fr-mt-4v">
+                <h2>Infos pratiques</h2>
+                <p>{{ event.practical_information|linebreaksbr }}</p>
+              </div>
+            {% endif %}
+            {% if contributions.count %}
+              <div class="fr-grid-row fr-grid-row--gutters fr-my-1w">
+                <div class="fr-col-12 fr-mt-3w">
+                  <h2>{{ contributions.count }} contribution{{ contributions.count|pluralize }} issue{{ contributions.count|pluralize }} de la concertation</h2>
+                </div>
+                {% for contribution in contributions %}
+                  <div class="fr-col fr-col-md-6">
+                    {% include "event/partials/contribution_card.html" %}
+                  </div>
+                {% endfor %}
+              </div>
+            {% endif %}
+            {% if event.image %}
+              <img class="fr-responsive-img" src="" alt="" />
+            {% endif %}
           </div>
-        </div>
-        <div class="fr-grid-row fr-grid-row-gutters fr-mb-5w">
-          {% if event.practical_information %}
-            <div class="fr-col fr-mr-2w">
-              <h2>Infos pratiques</h2>
-              <p>{{ event.practical_information|linebreaksbr }}</p>
-            </div>
-          {% endif %}
-          <div class="fr-col fr-mr-2w">
-            <h2>Adresse</h2>
-            <div class="fr-grid-row">
-              <div class="fr-col-1">
-                <span aria-hidden="true" class="fr-icon-map-pin-2-line"></span>
+          <div class="fr-col-12 fr-col-md-4 fr-px-2w fr-mb-4v">
+            {% if event.synthesis %}
+              <div class="fr-grid-row fr-mb-4v">{# to avoid the alignment of the cards from below #}
+                <div class="fr-col-12">
+                  <div class="fr-card fr-card--sm fr-enlarge-link fr-card--horizontal">
+                    <div class="fr-card__body">
+                      <div class="fr-card__content">
+                        <h3 class="fr-card__title">
+                          <a href="{{ event.synthesis.url }}">Synthèse de la concertation</a>
+                        </h3>
+                        <div class="fr-card__end">
+                          <p class="fr-card__detail">PDF - {{ event.synthesis.file.size|filesizeformat }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="fr-col-11 fr-pl-2v">
-                {% if event.place_name %}
-                  <strong>{{ event.place_name }}</strong><br>
-                {% endif %}
-                {{ event.address }}<br>
-                {{ event.zip_code }} {{ event.city }}
-              </div>
-            </div>
-          </div>
-          <div class="fr-col fr-mr-2w">
-            <h2>Date</h2>
-            <div class="fr-grid-row">
-              <div class="fr-col-1">
-                <span aria-hidden="true" class="fr-icon-calendar-line"></span>
-              </div>
-              <div class="fr-col-11 fr-pl-2v">
-                <p>
-                  {% if not event.start|date:"d F Y" == event.end|date:"d F Y" %}
-                    <strong>{{ event.start|date:"d F Y" }}</strong> {{ event.start|time:"H\hi" }}<br>
-                    <strong> {{ event.end|date:"d F Y" }}</strong> {{ event.end|time:"H\hi" }}
-                  {% else %}
-                    <strong>{{ event.start|date:"d F Y" }}</strong><br>
-                    {{ event.start|time:"H\hi" }} > {{ event.end|time:"H\hi" }}
+            {% endif %}
+            <div class="bordered fr-p-2w">
+              <div class="fr-grid-row fr-mb-4v">
+                <div class="fr-col-1">
+                  <span aria-hidden="true" class="fr-icon-map-pin-2-line"></span>
+                </div>
+                <div class="fr-col-11 fr-pl-2v">
+                  {% if event.place_name %}
+                    <strong>{{ event.place_name }}</strong><br>
                   {% endif %}
-                </p>
+                  {{ event.address }}<br>
+                  {{ event.zip_code }} {{ event.city }}
+                </div>
               </div>
-            </div>
-          </div>
-          {% if event.booking_online %}
-            <div class="fr-col fr-mr-2w">
-              {% if user.is_authenticated %}
-                {% if booking %}
-                  <h3>Inscription</h3>
-                  {% if booking.confirmed_on %}
-                    <p class="fr-badge fr-badge--success">Confirmée le {{ booking.confirmed_on|date:"d F Y" }}</p>
-                  {% elif booking.cancelled_on %}
-                    <p class="fr-badge fr-badge--error">Déclinée le {{ booking.cancelled_on|date:"d F Y" }}</p>
+              <div class="fr-grid-row">
+                <div class="fr-col-1">
+                  <span aria-hidden="true" class="fr-icon-calendar-line"></span>
+                </div>
+                <div class="fr-col-11 fr-pl-2v">
+                  <p>
+                    {% if not event.start|date:"d F Y" == event.end|date:"d F Y" %}
+                      <strong>{{ event.start|date:"d F Y" }}</strong> {{ event.start|time:"H\hi" }}<br>
+                      <strong> {{ event.end|date:"d F Y" }}</strong> {{ event.end|time:"H\hi" }}
+                    {% else %}
+                      <strong>{{ event.start|date:"d F Y" }}</strong><br>
+                      {{ event.start|time:"H\hi" }} > {{ event.end|time:"H\hi" }}
+                    {% endif %}
+                  </p>
+                </div>
+              </div>
+              {% if event.booking_online %}
+                {% if user.is_authenticated %}
+                  {% if booking %}
+                    <h3>Inscription</h3>
+                    {% if booking.confirmed_on %}
+                      <p class="fr-badge fr-badge--success">Confirmée le {{ booking.confirmed_on|date:"d F Y" }}</p>
+                    {% elif booking.cancelled_on %}
+                      <p class="fr-badge fr-badge--error">Déclinée le {{ booking.cancelled_on|date:"d F Y" }}</p>
+                    {% else %}
+                      <p class="fr-badge fr-badge--info">En attente de confirmation</p>
+                      <a class="fr-btn fr-mt-4v" href="{% url "event_registration_delete" booking.pk %}">Se désinscrire</a>
+                    {% endif %}
                   {% else %}
-                    <p class="fr-badge fr-badge--info">En attente de confirmation</p>
-                    <a class="fr-btn fr-mt-4v" href="{% url "event_registration_delete" booking.pk %}">Se désinscrire</a>
+                    <a class="fr-btn fr-btn--icon-left fr-icon-draft-line" href="{% url "event_registration" event.pk %}">Participer</a>
                   {% endif %}
                 {% else %}
-                  <a class="fr-btn" href="{% url "event_registration" event.pk %}">Participer</a>
+                  <a class="fr-btn fr-btn--icon-left fr-icon-draft-line" href="{% url "login" %}?next={% url "event_registration" event.pk %}">Participer</a>
                 {% endif %}
-              {% else %}
-                <a class="fr-btn" href="{% url "login" %}?next={% url "event_registration" event.pk %}">Participer</a>
               {% endif %}
             </div>
-          {% endif %}
-        </div>
-        <div class="fr-grid-row fr-grid-row-gutters">
-          {% if event.image %}
-            <div class="fr-col fr-mr-2w">
-              <img class="fr-responsive-img" src="{{ event.image.url }}" alt="" />
-            </div>
-          {% endif %}
-          {% if event.description %}
-            <div class="fr-col fr-mr-2w">
-              <h2>Description</h2>
-              <p>{{ event.description|linebreaksbr }}</p>
-            </div>
-          {% endif %}
-          {% if event.planning %}
-            <div class="fr-col fr-mr-2w">
-              <h2>Format</h2>
-              <p>{{ event.planning|linebreaksbr }}</p>
-            </div>
-          {% endif %}
-        </div>
-        {% if contributions.count %}
-          <div class="fr-grid-row fr-grid-row--gutters fr-my-1w">
-            <div class="fr-col-12 fr-mt-3w">
-              <h2>{{ contributions.count }} contribution{{ contributions.count|pluralize }} issue{{ contributions.count|pluralize }} de la concertation</h2>
-            </div>
-            {% for contribution in contributions %}
-              <div class="fr-col fr-col-md-4">
-                {% include "event/partials/contribution_card.html" %}
-              </div>
-            {% endfor %}
           </div>
-        {% endif %}
+        </div>
       </div>
     </div>
   </div>

@@ -57,6 +57,7 @@ class EventDetailView(DetailView):
             context["booking"] = Booking.objects.filter(event=self.object, participant=self.request.user).first()
 
         context["contributions"] = Contribution.objects.filter(event=self.object, public=True).prefetch_related("tags")
+        context["current_page_event_list"] = True
         return context
 
 
