@@ -28,6 +28,19 @@
         {% include "blocks/header.html" %}
         {% dsfr_theme_modale %}
         <main id="content" role="main">
+            {% if messages %}
+                <div class="fr-container">
+                    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+                        <div class="fr-col-12 fr-pt-12v">
+                            {% for message in messages %}
+                                <div class="fr-alert{% if message.tags %} fr-alert--{{ message.tags }}{% endif %}">
+                                    <p>{{ message }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
             {% block content %}{% endblock content %}
         </main>
         {% include "blocks/footer.html" %}
