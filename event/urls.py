@@ -6,6 +6,7 @@ from event.views.organizer import (
     OrganizerDashboardView,
     OrganizerEventCreateView,
     OrganizerEventDetailView,
+    OrganizerEventOrganizerAddView,
     OrganizerEventUpdateView,
     OrganizerRegistrationAcceptView,
     OrganizerRegistrationDeclineView,
@@ -45,6 +46,11 @@ urlpatterns = [
         "organizer/contribution/<int:pk>/update",
         ContributionUpdateView.as_view(),
         name="event_organizer_contribution_update",
+    ),
+    path(
+        "organizer/event/<int:event_pk>/add-organizer/",
+        OrganizerEventOrganizerAddView.as_view(),
+        name="event_organizer_event_add_organizer",
     ),
     # Participant
     path("list", EventListView.as_view(), name="event_list"),

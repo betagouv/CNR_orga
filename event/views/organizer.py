@@ -1,3 +1,5 @@
+from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
@@ -5,8 +7,11 @@ from django.utils import timezone
 from django.views.generic import DetailView, FormView, UpdateView, View
 from django.views.generic.list import ListView
 
-from event.forms import ContributionForm, EventForm
+from event.forms import AddOrganizerForm, ContributionForm, EventForm
 from event.models import Booking, Contribution, Event
+
+
+UserModel = get_user_model()
 
 
 class OrganizerMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -20,7 +25,7 @@ class OrganizerDashboardView(OrganizerMixin, ListView):
     template_name = "event/organizer/dashboard.html"
 
     def get_queryset(self):
-        qs = Event.objects.filter(owner=self.request.user).order_by("start")
+        qs = Event.objects.filter(organizers__in=[self.request.user]).order_by("start")
         return qs
 
     def get_context_data(self, **kwargs):
@@ -35,7 +40,8 @@ class OrganizerEventCreateView(OrganizerMixin, FormView):
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
-        form.save()
+        event = form.save()
+        event.organizers.add(self.request.user)
         return super(OrganizerEventCreateView, self).form_valid(form)
 
     def get_success_url(self):
@@ -47,7 +53,7 @@ class OrganizerEventDetailView(OrganizerMixin, DetailView):
     model = Event
 
     def get_object(self, *args, **kwargs):
-        event = get_object_or_404(Event, pk=self.kwargs["pk"], owner=self.request.user)
+        event = get_object_or_404(Event, pk=self.kwargs["pk"], organizers__in=[self.request.user])
         return event
 
     def get_context_data(self, **kwargs):
@@ -62,7 +68,7 @@ class OrganizerEventUpdateView(OrganizerMixin, UpdateView):
     form_class = EventForm
 
     def get_object(self, *args, **kwargs):
-        return get_object_or_404(Event, pk=self.kwargs["pk"], owner=self.request.user)
+        return get_object_or_404(Event, pk=self.kwargs["pk"], organizers__in=[self.request.user])
 
     def get_success_url(self):
         return reverse("event_organizer_event_detail", kwargs={"pk": self.object.pk})
@@ -74,7 +80,7 @@ class OrganizerRegistrationBaseView(OrganizerMixin, View):
             self.booking = get_object_or_404(
                 Booking,
                 pk=self.kwargs["pk"],
-                event__owner=self.request.user,  # only event owner can view/edit booking
+                event__organizers__in=[self.request.user],  # only event organizer can view/edit booking
             )
         return self.booking
 
@@ -106,7 +112,7 @@ class ContributionCreateView(OrganizerMixin, FormView):
         return initial
 
     def get_event(self):
-        return get_object_or_404(Event, pk=self.kwargs.get("event_pk"), owner=self.request.user)
+        return get_object_or_404(Event, pk=self.kwargs.get("event_pk"), organizers__in=[self.request.user])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -135,7 +141,7 @@ class ContributionUpdateView(OrganizerMixin, UpdateView):
         return context
 
     def get_object(self, *args, **kwargs):
-        return get_object_or_404(Contribution, pk=self.kwargs["pk"], event__owner=self.request.user)
+        return get_object_or_404(Contribution, pk=self.kwargs["pk"], event__organizers__in=[self.request.user])
 
     def get_initial(self):
         initial = super().get_initial()
@@ -145,3 +151,29 @@ class ContributionUpdateView(OrganizerMixin, UpdateView):
 
     def get_success_url(self):
         return reverse("event_organizer_event_detail", kwargs={"pk": self.object.event.pk})
+
+
+class OrganizerEventOrganizerAddView(OrganizerMixin, FormView):
+    template_name = "event/organizer/event_add_organizer.html"
+    form_class = AddOrganizerForm
+
+    def get_event(self):
+        return get_object_or_404(Event, pk=self.kwargs.get("event_pk"), owner=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["event"] = self.get_event()
+        return context
+
+    def form_valid(self, form):
+        user = UserModel.objects.get(email=form.cleaned_data["email_organizer"])
+        event = self.get_event()
+        if user not in event.organizers.all():
+            event.organizers.add(user)
+            messages.success(self.request, f"{user} a été ajouté aux organisateurs avec succès.")
+        else:
+            messages.info(self.request, f"{user} fait déjà partie des organisateurs.")
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("event_organizer_event_detail", kwargs={"pk": self.kwargs.get("event_pk")})

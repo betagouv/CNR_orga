@@ -1,10 +1,14 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from django.forms.fields import SplitDateTimeField
 from django.forms.models import ModelForm
 from django.utils import timezone
 from taggit.models import Tag
 
 from event.models import Booking, Contribution, ContributionStatus, Event
+
+
+UserModel = get_user_model()
 
 
 class MySplitDateTimeField(SplitDateTimeField):
@@ -221,3 +225,20 @@ class ContributionForm(ModelForm):
                 status=new_status,
             )
         return contribution
+
+
+class AddOrganizerForm(forms.Form):
+    email_organizer = forms.EmailField(label="Email du futur organisateur")
+
+    def clean_email_organizer(self):
+        email_organizer = self.cleaned_data.get("email_organizer")
+        try:
+            user = UserModel.objects.get(email=email_organizer)
+            if not user.is_organizer:
+                raise forms.ValidationError(
+                    "Cette adresse email n'appartient pas à un utilisateur de type organisateur."
+                )
+        except UserModel.DoesNotExist as exc:
+            raise forms.ValidationError("Cette adresse email ne correspond à aucun utilisateur.") from exc
+
+        return email_organizer

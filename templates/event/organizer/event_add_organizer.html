@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load dsfr_tags %}
+{% block content %}
+    <div class="fr-container fr-mb-md-14v">
+        <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+            <div id="contenu" class="fr-col-6 fr-py-12v">
+                <form method="post" enctype="multipart/form-data">{% csrf_token %}
+                    <fieldset class="fr-fieldset">
+                        <legend class="fr-fieldset__legend">
+                            <h2>Ajouter un organisateur à votre concertation CNR</h2>
+                        </legend>
+                        {% if form.non_field_errors %}
+                            {% for error in form.non_field_errors %}
+                                <div class="alert alert-danger" role="alert">
+                                    <p class="mb-0">
+                                        {{ error }}
+                                    </p>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <div class="fr-fieldset__element">
+                            {% dsfr_form %}
+                        </div>
+                    </fieldset>
+                    <div class="form-actions mb-3">
+                        <a href="{% url 'event_organizer_event_detail' event.pk %}" class="fr-btn fr-btn--secondary">Retour</a>
+                        <input type="submit" class="fr-btn" value="Ajouter" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
