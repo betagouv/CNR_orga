@@ -76,6 +76,7 @@ class EventForm(ModelForm):
             "booking_online",
             "participant_help",
             "planning",
+            "synthesis",
         ]
         labels = {
             "theme": "Thématique du CNR",
