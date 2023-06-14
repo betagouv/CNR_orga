@@ -1,9 +1,14 @@
 {% extends "dsfr/header.html" %}
 {% load static %}
-{% block service_title %}
+{% block brand %}
     <a href="/" title="Accueil — {{ SITE_CONFIG.site_title }}">
-        <p class="fr-header__service-title">{{ SITE_CONFIG.site_title }}</p>
+        <p class="fr-logo">république<br />française</p>
     </a>
+{% endblock brand %}
+
+{% block service_title %}
+    <img src="{% static 'images/cnr_logo_horizontal.svg' %}" alt="Conseil National de la Refondation" class="logo" />
+    <p class="fr-tag fr-icon-draft-line fr-tag--icon-left fr-mx-4v" target="_self">Espace concertations</p>
 {% endblock service_title %}
 
 {% block service_tagline %}{{ SITE_CONFIG.site_tagline }}{% endblock service_tagline %}
