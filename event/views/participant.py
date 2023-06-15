@@ -12,6 +12,7 @@ from event.models import Booking, Contribution, Event
 
 class EventListView(ListView):
     model = Event
+    paginate_by = 10
 
     def get_theme(self):
         filter_theme = self.request.GET.get("theme", None)
@@ -97,7 +98,7 @@ class EventRegistrationDeleteView(LoginRequiredMixin, UserPassesTestMixin, Delet
 
 class ContributionListView(ListView):
     model = Contribution
-    paginate_by = 4
+    paginate_by = 10
 
     def get_theme(self):
         filter_theme = self.request.GET.get("theme", None)
