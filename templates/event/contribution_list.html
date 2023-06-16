@@ -1,12 +1,13 @@
 {% extends "base.html" %}
-{% load dsfr_tags static %}
+{% load dsfr_tags static str_filters %}
 {% block content %}
   <div class="fr-container fr-mb-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
       <div id="contenu" class="fr-col-12 fr-py-12v">
         <h1>Liste des contributions</h1>
         <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
-          <div class="fr-col-3">
+          <div class="fr-col-12 fr-col-sm-3">
+            <h2 class="fr-h4">Filtres</h2>
             <form method="GET">
               <div class="fr-select-group">
                 {{ form.theme.errors }}
@@ -25,15 +26,14 @@
               </div>
             </form>
           </div>
-          <div class="fr-col-9">
+          <div class="fr-col-12 fr-col-sm-9">
             <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
+              <div class="fr-col-12">
+                <h2 class="fr-h4">{{ paginator.count }} résultat{{ paginator.count|pluralizefr }}</h2>
+              </div>
               {% for contribution in contribution_list %}
-                <div class="fr-col-md-6 fr-col">
+                <div class="fr-col-12 fr-col-md-6">
                   {% include "event/partials/contribution_card.html" %}
-                </div>
-              {% empty %}
-                <div class="fr-col-md-12 fr-col">
-                  <p>Retrouvez bientôt de nouvelles contributions...</p>
                 </div>
               {% endfor %}
             </div>
@@ -42,9 +42,7 @@
       </div>
     </div>
     <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--right fr-mt-6v fr-mb-6v">
-      <div class="col">
-        {% dsfr_pagination page_obj %}
-      </div>
+      {% dsfr_pagination page_obj %}
     </div>
   </div>
 {% endblock %}

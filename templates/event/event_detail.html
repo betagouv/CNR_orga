@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load dsfr_tags static %}
+{% load dsfr_tags static str_filters %}
 {% block content %}
   <div {% if event.image %} class="cover-baseline" style="background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url({{ event.image.url }})" {% endif %}>
     <div class="fr-container">
@@ -51,7 +51,7 @@
             {% if contributions.count %}
               <div class="fr-grid-row fr-grid-row--gutters fr-my-1w">
                 <div class="fr-col-12 fr-mt-3w">
-                  <h2>{{ contributions.count }} contribution{{ contributions.count|pluralize }} issue{{ contributions.count|pluralize }} de la concertation</h2>
+                  <h2>{{ contributions.count }} contribution{{ contributions.count|pluralizefr }} issue{{ contributions.count|pluralizefr }} de la concertation</h2>
                 </div>
                 {% for contribution in contributions %}
                   <div class="fr-col fr-col-md-6">

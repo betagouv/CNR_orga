@@ -9,10 +9,10 @@ from signup.factories import EmailBasedUserFactory
 class EventListViewTest(TestCase):
     def setUp(self):
         self.url = reverse("event_list")
-        self.upcoming_events = EventFactory.create_batch(5, upcoming=True, pub_status=Event.PubStatus.PUB)
-        self.upcoming_priv_events = EventFactory.create_batch(2, upcoming=True, pub_status=Event.PubStatus.PRIV)
-        self.past_events = EventFactory.create_batch(10, past=True, pub_status=Event.PubStatus.PUB)
-        self.past_priv_events = EventFactory.create_batch(4, past=True, pub_status=Event.PubStatus.PRIV)
+        self.upcoming_events = EventFactory.create_batch(2, upcoming=True, pub_status=Event.PubStatus.PUB)
+        self.upcoming_priv_events = EventFactory.create_batch(4, upcoming=True, pub_status=Event.PubStatus.PRIV)
+        self.past_events = EventFactory.create_batch(4, past=True, pub_status=Event.PubStatus.PUB)
+        self.past_priv_events = EventFactory.create_batch(6, past=True, pub_status=Event.PubStatus.PRIV)
 
     def test_anonymous_user_can_see_list_page(self):
         # list all public events
