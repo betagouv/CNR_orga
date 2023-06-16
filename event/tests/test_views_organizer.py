@@ -347,3 +347,118 @@ class EventContributionUpdateViewTest(TestCase):
 
         self.assertEqual(ContributionStatus.objects.first().status, first_status)
         self.assertEqual(ContributionStatus.objects.last().status, new_status)
+
+
+class EventOrganizerAddViewTest(TestCase):
+    def setUp(self):
+        self.event = EventFactory()
+        self.owner_user = self.event.owner
+
+        self.guest_user_not_organizer = EmailBasedUserFactory(is_organizer=False)
+        self.guest_user = EmailBasedUserFactory(is_organizer=True)
+
+        self.detail_url = reverse("event_organizer_event_detail", kwargs={"pk": self.event.pk})
+        self.add_url = reverse("event_organizer_event_add_organizer", kwargs={"event_pk": self.event.pk})
+
+    def test_organizer_can_see_list_and_add_button(self):
+        self.client.force_login(self.owner_user)
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, self.add_url)
+        self.assertContains(response, "Organisateurs (1)", html=True)
+        self.assertContains(response, "Liste des organisateurs", html=True)
+        self.assertContains(response, self.owner_user.email, html=True)
+        self.assertContains(response, "Propriétaire", html=True)
+
+    def test_organizer_cannot_add_invalid_email(self):
+        self.client.force_login(self.owner_user)
+        data = {
+            "email_organizer": faker.text(10),
+        }
+        response = self.client.post(self.add_url, data=data)
+        self.assertContains(response, "Saisissez une adresse de courriel valide.", html=True)
+
+    def test_organizer_cannot_add_unknown_email(self):
+        self.client.force_login(self.owner_user)
+        data = {
+            "email_organizer": faker.email(),
+        }
+        response = self.client.post(self.add_url, data=data)
+        self.assertContains(response, "Cette adresse email ne correspond à aucun utilisateur.", html=True)
+
+    def test_organizer_cannot_add_not_organizer_email(self):
+        self.client.force_login(self.owner_user)
+        data = {
+            "email_organizer": self.guest_user_not_organizer.email,
+        }
+        response = self.client.post(self.add_url, data=data)
+        self.assertContains(
+            response, "Cette adresse email n'appartient pas à un utilisateur de type organisateur.", html=True
+        )
+
+    def test_organizer_can_add_organizer_email(self):
+        self.client.force_login(self.owner_user)
+        data = {
+            "email_organizer": self.guest_user.email,
+        }
+        response = self.client.post(self.add_url, data=data, follow=True)
+        self.assertRedirects(response, self.detail_url)
+        self.assertContains(response, f"{self.guest_user} a été ajouté aux organisateurs avec succès.", html=True)
+
+        # new added user can do anything on the event, but not add other organizer
+        self.client.force_login(self.guest_user)
+
+        response = self.client.get(reverse("event_organizer_dashboard"))
+        self.assertContains(response, self.event.subject, html=True)
+
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, "Organisateurs (2)", html=True)
+        self.assertContains(response, "Liste des organisateurs", html=True)
+        self.assertContains(response, self.guest_user.email, html=True)
+
+        # guest organizer can update event
+        other_event = EventFactory.build()  # for another subject without save object
+        self.assertEqual(Event.objects.count(), 1)
+        data = {
+            "pub_status": self.event.pub_status,
+            "theme": self.event.theme,
+            "sub_theme": self.event.sub_theme,
+            "subject": other_event.subject,
+            "description": self.event.description,
+            "scale": self.event.scale,
+            "start_0": self.event.start.strftime("%Y-%m-%d"),
+            "start_1": self.event.start.strftime("%H:%M"),
+            "end_0": self.event.end.strftime("%Y-%m-%d"),
+            "end_1": self.event.end.strftime("%H:%M"),
+            "place_name": self.event.place_name,
+            "address": self.event.address,
+            "zip_code": self.event.zip_code,
+            "city": self.event.city,
+            "booking_online": self.event.booking_online,
+            "participant_help": self.event.participant_help,
+        }
+        url_update_event = reverse("event_organizer_event_update", kwargs={"pk": self.event.pk})
+        response = self.client.post(url_update_event, data=data)
+        self.assertRedirects(response, self.detail_url)
+
+        # guest organizer can add contribution
+        other_contribution = ContributionFactory.build()  # for generate data without save object
+        other_contribution_status = ContributionStatusFactory.build()
+        tags_to_submit = faker.sentences(nb=3)
+        data = {
+            "kind": other_contribution.kind,
+            "title": other_contribution.title,
+            "description": other_contribution.description,
+            "public": other_contribution.public,
+            "status": other_contribution_status.status,
+            "tags": ", ".join(tags_to_submit),
+        }
+        url_create_contribution = reverse("event_organizer_contribution_create", kwargs={"event_pk": self.event.pk})
+        response = self.client.post(url_create_contribution, data=data, follow=True)
+        self.assertRedirects(response, self.detail_url)
+        contrib = Contribution.objects.first()
+        self.assertContains(response, contrib.title, html=True)
+
+        # but cannot add other organizer
+        self.assertNotContains(response, self.add_url)
+        response = self.client.get(self.add_url)
+        self.assertEqual(response.status_code, 404)

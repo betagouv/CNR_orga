@@ -31,6 +31,15 @@ class EventFactory(factory.django.DjangoModelFactory):
     booking_online = True
     participant_help = True
 
+    @factory.post_generation
+    def organizers(self, create, extracted, **kwargs):
+        if not create:
+            return
+
+        self.organizers.add(self.owner)
+        if extracted:
+            self.organizers.add(*extracted)
+
     class Params:
         upcoming = factory.Trait(
             start=factory.fuzzy.FuzzyDateTime(
