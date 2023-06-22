@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -8,6 +9,7 @@ from taggit.models import Tag
 
 from event.forms import ContributionListFilterForm, EventListFilterForm, EventRegistrationForm
 from event.models import Booking, Contribution, Event
+from utils.emails import send_email
 
 
 class EventListView(ListView):
@@ -72,6 +74,16 @@ class EventRegistrationView(LoginRequiredMixin, FormView):
     def form_valid(self, form):
         form.instance.event = self.get_event()
         form.instance.participant = self.request.user
+        send_email(
+            to=[
+                {
+                    "name": f"{form.instance.participant.first_name} {form.instance.participant.last_name}",
+                    "email": form.instance.participant.email,
+                }
+            ],
+            params={"event_subject": form.instance.event.subject},
+            template_id=settings.BREVO_PARTICIPATION_RECEIVED_TEMPLATE,
+        )
         form.save()
         return super().form_valid(form)
 
