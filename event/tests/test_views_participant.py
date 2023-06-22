@@ -1,3 +1,6 @@
+import httpx
+import respx
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 
@@ -63,11 +66,13 @@ class EventListViewTest(TestCase):
 
 class EventRegistrationViewTest(TestCase):
     def setUp(self):
+        respx.post(settings.BREVO_SMTP_URL).mock(return_value=httpx.Response(200, json={"message": "OK"}))
         self.event = EventFactory()
         self.event_url = reverse("event_detail", kwargs={"pk": self.event.pk})
         self.register_url = reverse("event_registration", kwargs={"pk": self.event.pk})
         self.user = EmailBasedUserFactory(is_organizer=False)
 
+    @respx.mock
     def test_user_can_register_for_the_event(self):
         self.client.force_login(self.user)
         response = self.client.get(self.event_url)

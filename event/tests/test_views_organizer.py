@@ -1,3 +1,6 @@
+import httpx
+import respx
+from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 from faker import Faker
@@ -34,6 +37,7 @@ class EventDashboardViewTest(TestCase):
 
 class EventDetailViewTest(TestCase):
     def setUp(self):
+        respx.post(settings.BREVO_SMTP_URL).mock(return_value=httpx.Response(200, json={"message": "OK"}))
         self.event = EventFactory()
         self.url = reverse("event_organizer_event_detail", kwargs={"pk": self.event.pk})
 
@@ -45,6 +49,7 @@ class EventDetailViewTest(TestCase):
         self.assertContains(response, bookings[6].participant.first_name)
         self.assertContains(response, bookings[6].participant.last_name)
 
+    @respx.mock
     def test_organizer_participant_accept(self):
         booking = BookingFactory(event=self.event)
         self.client.force_login(self.event.owner)
@@ -64,6 +69,7 @@ class EventDetailViewTest(TestCase):
         self.assertContains(response, booking.participant.last_name)
         self.assertContains(response, "Confirmée le ")
 
+    @respx.mock
     def test_organizer_participant_decline(self):
         booking = BookingFactory(event=self.event)
         self.client.force_login(self.event.owner)
