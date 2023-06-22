@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -9,6 +10,7 @@ from django.views.generic.list import ListView
 
 from event.forms import AddOrganizerForm, ContributionForm, EventForm
 from event.models import Booking, Contribution, Event
+from utils.emails import send_email
 
 
 UserModel = get_user_model()
@@ -89,6 +91,16 @@ class OrganizerRegistrationAcceptView(OrganizerRegistrationBaseView):
     def post(self, request, **kwargs):
         booking = self.get_booking()
         booking.confirmed_on = timezone.now()
+        send_email(
+            to=[
+                {
+                    "name": f"{booking.participant.first_name} {booking.participant.last_name}",
+                    "email": booking.participant.email,
+                }
+            ],
+            params={"event_subject": booking.event.subject},
+            template_id=settings.BREVO_PARTICIPATION_ACCEPTED_TEMPLATE,
+        )
         booking.save()
         return render(request, "event/organizer/partials/booking_row.html", context={"booking": booking})
 
@@ -98,6 +110,16 @@ class OrganizerRegistrationDeclineView(OrganizerRegistrationBaseView):
         booking = self.get_booking()
         booking.cancelled_on = timezone.now()
         booking.cancelled_by = request.user
+        send_email(
+            to=[
+                {
+                    "name": f"{booking.participant.first_name} {booking.participant.last_name}",
+                    "email": booking.participant.email,
+                }
+            ],
+            params={"event_subject": booking.event.subject},
+            template_id=settings.BREVO_PARTICIPATION_DECLINE_TEMPLATE,
+        )
         booking.save()
         return render(request, "event/organizer/partials/booking_row.html", context={"booking": booking})
 
