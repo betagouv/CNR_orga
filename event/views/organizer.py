@@ -1,9 +1,13 @@
+import csv
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.text import slugify
 from django.views.generic import DetailView, FormView, UpdateView, View
 from django.views.generic.list import ListView
 
@@ -72,6 +76,44 @@ class OrganizerEventUpdateView(OrganizerMixin, UpdateView):
 
     def get_success_url(self):
         return reverse("event_organizer_event_detail", kwargs={"pk": self.object.pk})
+
+
+class OrganizerEventParticipantsExportView(OrganizerMixin, View):
+    def get_event(self, *args, **kwargs):
+        return get_object_or_404(Event, pk=self.kwargs["pk"], organizers__in=[self.request.user])
+
+    def get(self, request, *args, **kwargs):
+        event = self.get_event()
+        event_slug = slugify(event.subject)
+
+        response = HttpResponse(
+            content_type="text/csv",
+            headers={"Content-Disposition": f'attachment; filename="participants-{event_slug}.csv"'},
+        )
+        writer = csv.writer(response, quoting=csv.QUOTE_NONNUMERIC, escapechar="\\", quotechar='"')
+        writer.writerow(["Prénom", "Nom", "Email", "Aide", "Commentaire", "État"])
+
+        bookings = Booking.objects.filter(event=event)
+        for booking in bookings:
+            if booking.confirmed_on:
+                status = f"Confirmée le {booking.confirmed_on}"
+            elif booking.cancelled_on:
+                status = f"Déclinée le {booking.cancelled_on}"
+            else:
+                status = "En attente"
+
+            writer.writerow(
+                [
+                    booking.participant.first_name,
+                    booking.participant.last_name,
+                    booking.participant.email,
+                    "oui" if booking.offer_help else "non",
+                    booking.comment.replace('"', "''"),
+                    status,
+                ]
+            )
+
+        return response
 
 
 class OrganizerRegistrationBaseView(OrganizerMixin, View):
