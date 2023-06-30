@@ -29,9 +29,7 @@ class Event(models.Model):
         FRATRA = "fratra", "France Travail"
         JEUNES = "jeunes", "Jeunesse"
         LOGEME = "logeme", "Logement"
-        PROSOC = "prosoc", "Modèle productif et social"
         NUM = "num", "Numérique"
-        ENFANC = "enfanc", "Petite enfance"
         SANTE = "sante", "Santé"
 
     class Scale(models.TextChoices):
