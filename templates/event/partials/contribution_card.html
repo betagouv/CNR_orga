@@ -15,7 +15,7 @@
                     </li>
                     {% endif %}
                 </ul>
-                {{ contribution.description|linebreaksbr|truncatechars:120 }}
+                {{ contribution.description|truncatechars:120|linebreaksbr }}
                 {% if contribution.tags.count %}
                     <p class="fr-mt-2w">
                         #
