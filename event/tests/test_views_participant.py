@@ -63,6 +63,20 @@ class EventListViewTest(TestCase):
         for event in events:
             self.assertNotContains(response, event.subject, html=True)
 
+    def test_list_page_department_filter(self):
+        zip_code = Event.objects.filter(pub_status=Event.PubStatus.PUB).first().zip_code
+        department = zip_code[:2]
+        response = self.client.get(self.url, {"department": department})
+        events = Event.objects.filter(pub_status=Event.PubStatus.PUB, zip_code__startswith=department)
+        self.assertGreaterEqual(events.count(), 1)
+        for event in events:
+            self.assertContains(response, event.subject, html=True)
+
+        events = Event.objects.filter(pub_status=Event.PubStatus.PUB).exclude(zip_code__startswith=department)
+        self.assertGreaterEqual(events.count(), 1)
+        for event in events:
+            self.assertNotContains(response, event.subject, html=True)
+
 
 class EventRegistrationViewTest(TestCase):
     def setUp(self):
@@ -180,6 +194,25 @@ class ContributionListViewTest(TestCase):
         for contribution in (
             self.sante_contributions + self.sante_private_contributions + self.sante_private_event_contributions
         ):
+            self.assertNotContains(response, contribution.title, html=True)
+
+    def test_list_page_department_filter(self):
+        zip_code = Contribution.objects.filter(public=True).first().event.zip_code
+        department = zip_code[:2]
+        response = self.client.get(self.url, {"department": department})
+
+        contributions = Contribution.objects.filter(
+            event__pub_status=Event.PubStatus.PUB, public=True, event__zip_code__startswith=department
+        )
+        self.assertGreaterEqual(contributions.count(), 1)
+        for contribution in contributions:
+            self.assertContains(response, contribution.title, html=True)
+
+        contributions = Contribution.objects.filter(event__pub_status=Event.PubStatus.PUB, public=True).exclude(
+            event__zip_code__startswith=department
+        )
+        self.assertGreaterEqual(contributions.count(), 1)
+        for contribution in contributions:
             self.assertNotContains(response, contribution.title, html=True)
 
 

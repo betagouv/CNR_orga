@@ -19,6 +19,11 @@
                 <label class="fr-label" for="{{ form.scale.id_for_label }}">{{ form.scale.label }}</label>
                 {{ form.scale }}
               </div>
+              <div class="fr-select-group">
+                {{ form.department.errors }}
+                <label class="fr-label" for="{{ form.department.id_for_label }}">{{ form.department.label }}</label>
+                {{ form.department }}
+              </div>
               <div class="fr-checkbox-group">
                 {{ form.upcoming.errors }}
                 {{ form.upcoming }}

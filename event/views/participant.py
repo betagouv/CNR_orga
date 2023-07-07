@@ -24,6 +24,10 @@ class EventListView(ListView):
         filter_scale = self.request.GET.get("scale", None)
         return filter_scale if filter_scale in Event.Scale.values else None
 
+    def get_department(self):
+        filter_department = self.request.GET.get("department", None)
+        return filter_department if filter_department and filter_department.isnumeric() else None
+
     def get_upcoming(self):
         return self.request.GET.get("upcoming", None) == "on"
 
@@ -40,12 +44,21 @@ class EventListView(ListView):
         filter_scale = self.get_scale()
         if filter_scale:
             qs = qs.filter(scale=filter_scale)
+
+        filter_department = self.get_department()
+        if filter_department:
+            qs = qs.filter(zip_code__startswith=filter_department)
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["form"] = EventListFilterForm(
-            initial={"theme": self.get_theme(), "scale": self.get_scale(), "upcoming": self.get_upcoming()}
+            initial={
+                "theme": self.get_theme(),
+                "scale": self.get_scale(),
+                "department": self.get_department(),
+                "upcoming": self.get_upcoming(),
+            }
         )
         context["current_page_event_list"] = True
         return context
@@ -124,6 +137,10 @@ class ContributionListView(ListView):
         filter_scale = self.request.GET.get("scale", None)
         return filter_scale if filter_scale in Event.Scale.values else None
 
+    def get_department(self):
+        filter_department = self.request.GET.get("department", None)
+        return filter_department if filter_department and filter_department.isnumeric() else None
+
     def get_queryset(self):
         qs = Contribution.objects.filter(event__pub_status=Event.PubStatus.PUB, public=True)
 
@@ -138,12 +155,21 @@ class ContributionListView(ListView):
         filter_scale = self.get_scale()
         if filter_scale:
             qs = qs.filter(event__scale=filter_scale)
+
+        filter_department = self.get_department()
+        if filter_department:
+            qs = qs.filter(event__zip_code__startswith=filter_department)
         return qs.order_by("title")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context["form"] = ContributionListFilterForm(
-            initial={"theme": self.get_theme(), "tag": self.get_tag(), "scale": self.get_scale()}
+            initial={
+                "theme": self.get_theme(),
+                "tag": self.get_tag(),
+                "scale": self.get_scale(),
+                "department": self.get_department(),
+            }
         )
         context["current_page_contribution_list"] = True
         return context

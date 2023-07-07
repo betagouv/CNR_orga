@@ -6,9 +6,11 @@ from django.utils import timezone
 from taggit.models import Tag
 
 from event.models import Booking, Contribution, ContributionStatus, Event
+from utils.constants import DEPARTMENTS_PRETTY
 
 
 UserModel = get_user_model()
+DEPARTMENTS_PRETTY_CHOICES = {"": "Tous"} | DEPARTMENTS_PRETTY
 
 
 class MySplitDateTimeField(SplitDateTimeField):
@@ -114,6 +116,17 @@ class EventListFilterForm(forms.Form):
         ),
     )
 
+    department = forms.ChoiceField(
+        label="Département",
+        choices=DEPARTMENTS_PRETTY_CHOICES.items(),
+        widget=forms.Select(
+            attrs={
+                "class": "fr-select",
+                "onchange": "this.form.submit()",
+            }
+        ),
+    )
+
     upcoming = forms.BooleanField(
         label="À venir uniquement",
         widget=forms.CheckboxInput(
@@ -149,6 +162,17 @@ class ContributionListFilterForm(forms.Form):
     scale = forms.ChoiceField(
         label="Échelle",
         choices=[("", "Toutes")] + Event.Scale.choices,
+        widget=forms.Select(
+            attrs={
+                "class": "fr-select",
+                "onchange": "this.form.submit()",
+            }
+        ),
+    )
+
+    department = forms.ChoiceField(
+        label="Département",
+        choices=DEPARTMENTS_PRETTY_CHOICES.items(),
         widget=forms.Select(
             attrs={
                 "class": "fr-select",
