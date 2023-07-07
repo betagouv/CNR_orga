@@ -24,6 +24,11 @@
                 <label class="fr-label" for="{{ form.scale.id_for_label }}">{{ form.scale.label }}</label>
                 {{ form.scale }}
               </div>
+              <div class="fr-select-group">
+                {{ form.department.errors }}
+                <label class="fr-label" for="{{ form.department.id_for_label }}">{{ form.department.label }}</label>
+                {{ form.department }}
+              </div>
             </form>
           </div>
           <div class="fr-col-12 fr-col-sm-9">
