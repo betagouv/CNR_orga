@@ -216,6 +216,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "signup.EmailBasedUser"
 AUTHENTICATION_BACKENDS = ["signup.backends.EmailBackend"]
 
+# TAGGIT
+# ---------------------------------------
+TAGGIT_CASE_INSENSITIVE = True
+TAGGIT_STRIP_UNICODE_WHEN_SLUGIFY = True
 
 # Sending email
 # https://docs.djangoproject.com/en/4.1/topics/email/#smtp-backend
@@ -227,8 +231,13 @@ EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == "True"
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL")
 
-
-# TAGGIT
+# BREVO - To send mail template
 # ---------------------------------------
-TAGGIT_CASE_INSENSITIVE = True
-TAGGIT_STRIP_UNICODE_WHEN_SLUGIFY = True
+BREVO_URL = "https://api.brevo.com/v3/"
+BREVO_SMTP_URL = os.path.join(BREVO_URL, "smtp/email")
+
+BREVO_API_KEY = os.getenv("BREVO_API_KEY", "set-brevo-api-key")
+
+BREVO_PARTICIPATION_RECEIVED_TEMPLATE = 40
+BREVO_PARTICIPATION_ACCEPTED_TEMPLATE = 41
+BREVO_PARTICIPATION_DECLINE_TEMPLATE = 42
