@@ -190,6 +190,32 @@ class EventUpdateViewTest(TestCase):
         self.assertEqual(event_after.subject, other_event.subject)
 
 
+class EventParticipantsExportViewTest(TestCase):
+    def setUp(self):
+        self.event = EventFactory()
+        self.bookings = BookingFactory.create_batch(10, event=self.event)
+        self.url = reverse("event_organizer_event_participants_export", kwargs={"pk": self.event.pk})
+        self.detail_url = reverse("event_organizer_event_detail", kwargs={"pk": self.event.pk})
+        self.user = self.event.owner
+
+    def test_export_participants_csv(self):
+        self.client.force_login(self.user)
+
+        # Is there the export link in detail view
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, self.url)
+
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertIn("attachment; filename=", response["Content-Disposition"])
+
+        # Test CSV file content
+        content_lines = response.content.decode().split("\r\n")
+        self.assertEqual(content_lines[0], '"Prénom","Nom","Email","Aide","Commentaire","État"')
+        self.assertEqual(len(content_lines), 12)  # There is a blank line at the end
+
+
 class EventContributionCreateViewTest(TestCase):
     def setUp(self):
         self.event = EventFactory()
